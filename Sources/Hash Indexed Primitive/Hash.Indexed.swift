@@ -53,6 +53,7 @@ extension Hash {
 ///
 /// `Hash` is a non-generic namespace, but the hoist keeps the declaration symmetrical
 /// with the family ADTs and keeps the alias canonical.
+@_documentation(visibility: public)
 @frozen
 public struct __HashIndexed<Dense: Store.`Protocol` & Buffer.`Protocol` & ~Copyable>: ~Copyable
 where Dense.Count == Index_Primitives.Index<Dense.Element>.Count, Dense.Element: Hash.Key {
