@@ -32,7 +32,7 @@ import Cardinal_Primitives
 // O(bucketCapacity) metadata fill at init.
 
 typealias DenseColumn =
-    Buffer<Storage<Memory.Allocator<Memory.Heap>.System>.Contiguous<Int>>.Linear
+    Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>.Linear
 
 typealias Indexed = Hash.Indexed<DenseColumn>
 
