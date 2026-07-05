@@ -108,6 +108,107 @@ struct HashTableEngineTests {
         let goneInCopy = copy.position(forHash: typedHash((1)), equals: { $0 == 0 })
         #expect(goneInCopy == nil)
     }
+
+    @Test
+    func `a collision cluster wrapping the table end: backward shift repairs wrapped-edge, head, and middle removes`() {
+        var table = Hash.Table<Int>(minimumCapacity: .zero)  // bucket capacity 8
+
+        // Deterministic placement THROUGH the per-instance seed: bucket selection
+        // is (hash ^ _seed) % capacity, so `_seed ^ 13` targets bucket 13 % 8 = 5
+        // for ANY seed value. (13 and 21 are congruent mod 8; the fallback dodges
+        // raw == 0, which normalize() would remap to 1 and move the cluster.)
+        let seed = table._seed
+        let raw = (seed ^ 13) != 0 ? (seed ^ 13) : (seed ^ 21)
+        let h = Hash.Value(raw)
+
+        // Five same-hash entries form ONE probe chain from bucket 5, WRAPPING the
+        // table end: buckets 5, 6, 7, then 0, 1. (Five stays below the growth
+        // gate: the pre-insert check is count·10 ≥ capacity·7, and 4·10 < 8·7.)
+        for position in 0..<5 {
+            let inserted = table.insert(
+                position: Index<Int>(Ordinal(UInt(position))),
+                hashValue: h,
+                equals: { _ in false }
+            )
+            #expect(inserted)
+        }
+        expectWrappedCluster(table, from: 5, holding: [0, 1, 2, 3, 4], rawHash: raw)
+
+        // 1 — remove AT THE WRAPPED EDGE (bucket 0): the tail entry at bucket 1
+        //     must relocate backward INTO the wrapped hole.
+        let atEdge = table.remove(hashValue: h, equals: { $0 == 3 })
+        #expect(atEdge == 3)
+        expectWrappedCluster(table, from: 5, holding: [0, 1, 2, 4], rawHash: raw)
+
+        // 2 — remove the chain HEAD (bucket 5): every survivor shifts back one,
+        //     and the wrapped entry crosses the table end BACKWARD (bucket 0 → 7).
+        let atHead = table.remove(hashValue: h, equals: { $0 == 0 })
+        #expect(atHead == 0)
+        expectWrappedCluster(table, from: 5, holding: [1, 2, 4], rawHash: raw)
+
+        // 3 — remove the chain MIDDLE (bucket 6).
+        let atMiddle = table.remove(hashValue: h, equals: { $0 == 2 })
+        #expect(atMiddle == 2)
+        expectWrappedCluster(table, from: 5, holding: [1, 4], rawHash: raw)
+
+        // The removed entries stay gone (no residue resurrects them).
+        let ghostHead = table.position(forHash: h, equals: { $0 == 0 })
+        let ghostEdge = table.position(forHash: h, equals: { $0 == 3 })
+        #expect(ghostHead == nil)
+        #expect(ghostEdge == nil)
+    }
+}
+
+/// Asserts the single-ideal-chain invariant after backward-shift repair: the
+/// occupied buckets are EXACTLY the cyclic run of `positions.count` buckets
+/// from `start` (capacity 8), holding `positions` in insertion-relative order
+/// (FCFS + backward shift preserve chain order); every other bucket is `empty`
+/// (tombstone-free — no residue); every live bucket's rank back-pointer
+/// round-trips (the coherence law-4 analog); every survivor is findable
+/// through the public door.
+private func expectWrappedCluster(
+    _ table: borrowing Hash.Table<Int>,
+    from start: Int,
+    holding positions: [Int],
+    rawHash: Int
+) {
+    let capacity = 8
+    var expectedPosition: [Int: Int] = [:]  // bucket raw value → held position
+    for (offset, position) in positions.enumerated() {
+        expectedPosition[(start + offset) % capacity] = position
+    }
+
+    let count = table.count
+    #expect(count == Index<Int>.Count(UInt(positions.count)))
+
+    var bucket: Hash.Table<Int>.Bucket.Index = .zero
+    let end = table.capacity.map(Ordinal.init)
+    var bucketRaw = 0
+    while bucket < end {
+        let stored = table[hash: bucket]
+        if let position = expectedPosition[bucketRaw] {
+            // Occupied: our cluster's hash, the chain-order position, and a
+            // round-tripping rank back-pointer (the B-7 plane under repair).
+            #expect(stored == rawHash)
+            let held = table[position: bucket]
+            let expected = Index<Int>(Ordinal(UInt(position)))
+            #expect(held == expected)
+            let back = table[bucketOfRank: held]
+            let backPointerRoundTrips = back == bucket
+            #expect(backPointerRoundTrips)
+        } else {
+            #expect(stored == Hash.Table<Int>.empty)
+        }
+        bucket = bucket.successor.saturating()
+        bucketRaw += 1
+    }
+    #expect(bucketRaw == capacity)  // the walk covered exactly the 8 buckets
+
+    for position in positions {
+        let expected = Index<Int>(Ordinal(UInt(position)))
+        let found = table.position(forHash: Hash.Value(rawHash), equals: { $0 == expected })
+        #expect(found == expected)
+    }
 }
 
 // MARK: - The ordered hashed column: [DS-024] + coherence
