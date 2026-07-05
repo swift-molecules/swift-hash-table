@@ -55,7 +55,7 @@ extension Hash {
     ///
     /// `Hash.Table` is unconditionally move-only (the pre-R-1 conditional Copyable +
     /// `ensureUnique` dissolved at the ADT-families reshape): value semantics enter via
-    /// `Shared` wrapping the COMPOSITE (`Shared<E, Hash.Indexed<Dense>>`), never the
+    /// `Ownership.Shared` wrapping the COMPOSITE (`Ownership.Shared<E, Hash.Indexed<Dense>>`), never the
     /// engine. `clone()` is the explicit deep copy the composite's clone strategy uses —
     /// seed-and-layout-preserving (no rehash), the stdlib `copy()` discipline.
     ///

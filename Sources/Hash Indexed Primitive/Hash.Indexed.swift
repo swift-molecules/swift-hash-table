@@ -34,7 +34,7 @@ extension Hash {
     /// ## Move-only; `Shared` wraps the COMPOSITE
     ///
     /// `Hash.Indexed` is unconditionally move-only. The CoW column is
-    /// `Shared<E, Hash.Indexed<Dense>>` — one box around BOTH planes, one clone
+    /// `Ownership.Shared<E, Hash.Indexed<Dense>>` — one box around BOTH planes, one clone
     /// strategy (`clone()`: dense clone + the engine's seed-preserving plane copy).
     ///
     /// ## The seam, under the INDEXED DISCIPLINE (restricted domain)
