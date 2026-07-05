@@ -56,7 +56,7 @@ extension Hash {
 @_documentation(visibility: public)
 @frozen
 public struct __HashIndexed<Dense: Store.`Protocol` & Buffer.`Protocol` & ~Copyable>: ~Copyable
-where Dense.Count == Index_Primitives.Index<Dense.Element>.Count, Dense.Element: Hash.Key {
+where Dense.Element: Hash.Key {
 
     /// The dense insertion-ordered element column.
     @usableFromInline
