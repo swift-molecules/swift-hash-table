@@ -32,7 +32,7 @@ private func typedHash<T: Hash.`Protocol` & ~Copyable>(_ value: borrowing T) -> 
 // MARK: - The engine: insert / lookup / remove with chain repair
 
 @Suite
-struct HashTableEngineTests {
+struct `Hash Table Engine Tests` {
 
     @Test
     func `insert, position, duplicate rejection`() {
@@ -214,7 +214,7 @@ private func expectWrappedCluster(
 // MARK: - The ordered hashed column: [DS-024] + coherence
 
 @Suite
-struct HashIndexedLawTests {
+struct `Hash Indexed Law Tests` {
 
     @Test
     func `the ordered hashed column obeys the seam ledger laws`() {
@@ -244,7 +244,7 @@ struct HashIndexedLawTests {
 // MARK: - The ordered hashed column: behavior
 
 @Suite(.serialized)
-struct HashIndexedTests {
+struct `Hash Indexed Tests` {
 
     @Test
     func `insert, contains, duplicate hand-back, counts`() {
@@ -316,7 +316,7 @@ struct HashIndexedTests {
 // MARK: - Move-only members end-to-end + teardown
 
 @Suite(.serialized)
-struct HashIndexedTeardownTests {
+struct `Hash Indexed Teardown Tests` {
 
     @Test
     func `move-only members insert, resolve, remove, and tear down exactly once`() {
@@ -362,7 +362,9 @@ extension HashItem: Hash.`Protocol` {
     }
 }
 
-private enum HashProbe {
+private enum HashProbe {}
+
+extension HashProbe {
     nonisolated(unsafe) static var _destroyed: [Int] = []
     static func reset() { unsafe _destroyed = [] }
     static func recordDestroy(_ id: Int) { unsafe _destroyed.append(id) }

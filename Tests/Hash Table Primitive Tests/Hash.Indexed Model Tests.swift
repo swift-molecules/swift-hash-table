@@ -45,7 +45,7 @@ private func typedHash<T: Hash.`Protocol` & ~Copyable>(_ value: borrowing T) -> 
 // MARK: - The member fixture: equality binds to `id`, hashing binds to `group`
 // (hash coarser than equality = lawful collisions on demand)
 
-private struct Key: Hash.`Protocol` {
+private struct Key {
     let id: Int
     let group: Int
 
@@ -57,7 +57,9 @@ private struct Key: Hash.`Protocol` {
     init(id: Int, collisionDivisor: Int) {
         self.init(id: id, group: id / collisionDivisor)
     }
+}
 
+extension Key: Hash.`Protocol` {
     borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(group)
     }
@@ -76,7 +78,9 @@ private struct Reference {
     /// Retired (id, group) pairs: miss-probes aimed into the exact chains the
     /// ids used to occupy (a stale entry would resurface here).
     var graveyard: [(id: Int, group: Int)] = []
+}
 
+extension Reference {
     mutating func append(_ key: Key) {
         members.append(key)
         ids.insert(key.id)
@@ -159,7 +163,9 @@ private struct OrderedStream: ~Copyable {
         self.verdict = Model.Verdict(seed: seed)
         self.collisionDivisor = collisionDivisor
     }
+}
 
+extension OrderedStream {
     mutating func freshKey() -> Key {
         let key = Key(id: nextID, collisionDivisor: collisionDivisor)
         nextID += 1
@@ -356,7 +362,9 @@ private struct EngineStream: ~Copyable {
         self.rng = rng
         self.verdict = Model.Verdict(seed: seed)
     }
+}
 
+extension EngineStream {
     func positionIndex(_ position: Int) -> Index<Key> {
         Index<Key>(Ordinal(UInt(position)))
     }
@@ -592,7 +600,9 @@ private struct TrackedStream: ~Copyable {
         self.verdict = Model.Verdict(seed: seed)
         self.census = census
     }
+}
 
+extension TrackedStream {
     mutating func freshID() -> (id: Int, group: Int) {
         let minted = (nextID, nextID / collisionDivisor)
         nextID += 1
