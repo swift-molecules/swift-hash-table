@@ -171,7 +171,7 @@ extension Hash.Table where Element: ~Copyable {
     /// Doubles the capacity and rehashes all elements (the per-instance seed is
     /// REGENERATED here — the stdlib quadratic-copy defense).
     @inlinable
-    mutating func grow() {
+    package mutating func grow() {
         let oldCapacity = bucketCapacity
         let newSeed = Self.makeSeed()
         let newCapacity = Index<Bucket>.Count.max(

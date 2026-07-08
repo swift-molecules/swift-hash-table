@@ -36,7 +36,7 @@ extension Hash.Table where Element: ~Copyable {
     ///
     /// Tombstone-free, so occupancy == count; grow when count exceeds 70% of capacity.
     @inlinable
-    var shouldGrow: Bool {
+    package var shouldGrow: Bool {
         typealias Scale = Affine.Discrete.Ratio<Bucket, Bucket>
         return _count.retag(Bucket.self) * Scale(10) >= bucketCapacity * Scale(7)
     }
