@@ -307,10 +307,15 @@ struct `Hash Indexed Tests` {
         let violations = Hash.Coherence.violations(column)
         #expect(violations.isEmpty, "\(violations)")
         // The removed members are gone; every survivor is still findable.
-        #expect(!column.contains(9))
-        #expect(!column.contains(0))
+        // (`contains` is bound to a local first: `#expect` on the call itself would
+        // require the move-only column to be `Copyable`.)
+        let hasNine = column.contains(9)
+        let hasZero = column.contains(0)
+        #expect(!hasNine)
+        #expect(!hasZero)
         for survivor in seen {
-            #expect(column.contains(survivor))
+            let found = column.contains(survivor)
+            #expect(found, "survivor \(survivor) went missing")
         }
     }
 
@@ -343,7 +348,8 @@ struct `Hash Indexed Tests` {
                     #expect(seen == expected, "start \(start), stride \(stride), victim \(victim)")
                     let violations = Hash.Coherence.violations(column)
                     #expect(violations.isEmpty, "start \(start), stride \(stride), victim \(victim): \(violations)")
-                    #expect(!column.contains(victim))
+                    let stillThere = column.contains(victim)
+                    #expect(!stillThere, "start \(start), stride \(stride), victim \(victim)")
                     cursor += stride
                 }
                 let empty = column.isEmpty
