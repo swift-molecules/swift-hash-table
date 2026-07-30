@@ -94,17 +94,8 @@ extension __HashIndexed where Dense: ~Copyable {
             candidate == removed
         }
 
-        // 2. The order-preserving dense shift (the Array.remove(at:) dance through the
-        //    seam; the column's ledger keeps count honest).
-        let end: Index<E> = elements.count.map(Ordinal.init)
-        let removed = elements.move(at: position)
-        var dst = position
-        var src = dst.successor.saturating()
-        while src < end {
-            elements.initialize(at: dst, to: elements.move(at: src))
-            dst = src
-            src = src.successor.saturating()
-        }
+        // 2. The order-preserving dense shift (the backward carry sweep).
+        let removed = _removeShiftingDown(at: position)
 
         // 3. Every position after the removal point shifted down by one.
         indices.positions.decrement(after: position)
@@ -193,17 +184,57 @@ extension __HashIndexed where Dense: ~Copyable {
             candidate == removed
         }
 
-        let end: Index<E> = elements.count.map(Ordinal.init)
-        let removed = elements.move(at: position)
-        var dst = position
-        var src = dst.successor.saturating()
-        while src < end {
-            elements.initialize(at: dst, to: elements.move(at: src))
-            dst = src
-            src = src.successor.saturating()
-        }
+        let removed = _removeShiftingDown(at: position)
 
         indices.positions.decrement(after: position)
         return removed
+    }
+}
+
+// MARK: - The order-preserving dense shift (the ONE place the dance lives)
+
+extension __HashIndexed where Dense: ~Copyable {
+    /// Removes the element at `position` from the dense plane, shifting every later
+    /// element down one slot, and hands the removed element back.
+    ///
+    /// ## Why a backward CARRY SWEEP and not `move` + `initialize`
+    ///
+    /// The dense plane's 4-op seam is *trailing-only*: `Buffer.Linear` only retracts at
+    /// `count − 1` and only appends at `count`, because both ops mirror the header cursor
+    /// with the ledger's own arithmetic. An interior `move(at:)` — or an interior
+    /// `initialize(at:to:)` — violates that contract; in `-Onone` it trips the buffer's
+    /// `precondition`, and in `-O` the same `precondition` lowers to `Builtin.condfail`,
+    /// i.e. a bare `ud2` (SIGILL) with no diagnostic. The prior implementation opened this
+    /// removal with `elements.move(at: position)`, so every interior removal trapped.
+    ///
+    /// The lawful shape uses only the two ops the seam actually grants at an interior slot:
+    /// the *live-slot subscript* (which never touches the ledger) and a *single* trailing
+    /// retraction. So:
+    ///
+    ///   1. Pop the trailing element into a carry — the one lawful ledger move.
+    ///   2. Walk the carry DOWN to `position`, exchanging it with one live slot at a time.
+    ///      Slot `i` receives what slot `i + 1` held, and the carry picks up slot `i`.
+    ///   3. When the walk reaches `position`, the carry holds the element that was there —
+    ///      the removed member — and every later element sits one slot lower.
+    ///
+    /// Every slot stays initialized for the whole sweep, the ledger moves exactly once, and
+    /// nothing is copied — which is what makes it correct for `~Copyable` members too.
+    ///
+    /// - Precondition: `position < count` (the caller resolved it through a lookup).
+    /// - Complexity: O(`count` − `position`)
+    @inlinable
+    internal mutating func _removeShiftingDown<E: ~Copyable>(at position: Index<E>) -> E
+    where Dense == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear {
+        // `frontier` counts the still-live slots, so it names the trailing slot as an ordinal
+        // and the sweep derives each next slot by lowering it — the descent never steps an
+        // index backwards (there is no saturating ordinal predecessor, by design).
+        var frontier: Index<E>.Count = elements.count.subtract.saturating(.one)
+        var carry = elements.move(at: frontier.map(Ordinal.init))
+        while position < frontier.map(Ordinal.init) {
+            frontier = frontier.subtract.saturating(.one)
+            let slot: Index<E> = frontier.map(Ordinal.init)
+            swap(&carry, &elements[slot])
+        }
+        return carry
     }
 }

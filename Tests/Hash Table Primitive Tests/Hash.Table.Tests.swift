@@ -281,6 +281,79 @@ struct `Hash Indexed Tests` {
         #expect(coherent.isEmpty, "\(coherent)")
     }
 
+    /// Regression for the trailing-only seam trap: the removal dance used to open with an
+    /// INTERIOR `elements.move(at: position)`, which violates `Buffer.Linear`'s trailing-only
+    /// retraction contract. In `-Onone` that trips the buffer's `precondition`; in `-O` the
+    /// same `precondition` lowers to `Builtin.condfail`, i.e. a bare `ud2` (SIGILL) with no
+    /// diagnostic — the release-mode-only crash reported downstream. This is the exact
+    /// reported sequence: 16 inserts, then `remove(9)` followed by `remove(0)`.
+    @Test
+    func `interior removal rides the seam lawfully: sixteen inserts, then remove 9 and remove 0`() {
+        var column = OrderedColumn<Int>(minimumCapacity: Index<Int>.Count(4))
+        var i = 0
+        while i < 16 {
+            column.insert(i)
+            i += 1
+        }
+        let nine = column.remove(9)
+        #expect(nine == 9)
+        let zero = column.remove(0)
+        #expect(zero == 0)
+        var seen: [Int] = []
+        column.forEach { seen.append($0) }
+        #expect(seen == [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15])
+        let n = column.count
+        #expect(n == Index<Int>.Count(14))
+        let violations = Hash.Coherence.violations(column)
+        #expect(violations.isEmpty, "\(violations)")
+        // The removed members are gone; every survivor is still findable.
+        #expect(!column.contains(9))
+        #expect(!column.contains(0))
+        for survivor in seen {
+            #expect(column.contains(survivor))
+        }
+    }
+
+    /// A denser sweep of the same law: drain a 16-element column to empty under many
+    /// different removal ORDERS (varying where the walk starts and how far it strides),
+    /// checking insertion order and index coherence after every single removal. This
+    /// covers head, interior, and trailing removals, and the final one-element column.
+    @Test
+    func `draining a sixteen-element column in any order preserves insertion order and coherence`() {
+        var start = 0
+        while start < 16 {
+            var stride = 1
+            while stride <= 5 {
+                var column = OrderedColumn<Int>(minimumCapacity: Index<Int>.Count(4))
+                var expected: [Int] = []
+                var i = 0
+                while i < 16 {
+                    column.insert(i * 7)
+                    expected.append(i * 7)
+                    i += 1
+                }
+                var cursor = start
+                while !expected.isEmpty {
+                    let slot = cursor % expected.count
+                    let victim = expected.remove(at: slot)
+                    let removed = column.remove(victim)
+                    #expect(removed == victim, "start \(start), stride \(stride), victim \(victim)")
+                    var seen: [Int] = []
+                    column.forEach { seen.append($0) }
+                    #expect(seen == expected, "start \(start), stride \(stride), victim \(victim)")
+                    let violations = Hash.Coherence.violations(column)
+                    #expect(violations.isEmpty, "start \(start), stride \(stride), victim \(victim): \(violations)")
+                    #expect(!column.contains(victim))
+                    cursor += stride
+                }
+                let empty = column.isEmpty
+                #expect(empty)
+                stride += 1
+            }
+            start += 1
+        }
+    }
+
     @Test
     func `removeAll empties both planes; reuse works`() {
         var column = OrderedColumn<Int>(minimumCapacity: Index<Int>.Count(4))
