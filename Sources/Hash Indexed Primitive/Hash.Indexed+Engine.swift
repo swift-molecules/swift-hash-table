@@ -223,7 +223,7 @@ extension __HashIndexed where Dense: ~Copyable {
     /// - Precondition: `position < count` (the caller resolved it through a lookup).
     /// - Complexity: O(`count` − `position`)
     @inlinable
-    internal mutating func _removeShiftingDown<E: ~Copyable>(at position: Index<E>) -> E
+    package mutating func _removeShiftingDown<E: ~Copyable>(at position: Index<E>) -> E
     where Dense == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear {
         // `frontier` counts the still-live slots, so it names the trailing slot as an ordinal
         // and the sweep derives each next slot by lowering it — the descent never steps an

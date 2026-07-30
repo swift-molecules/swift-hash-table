@@ -281,12 +281,14 @@ struct `Hash Indexed Tests` {
         #expect(coherent.isEmpty, "\(coherent)")
     }
 
-    /// Regression for the trailing-only seam trap: the removal dance used to open with an
-    /// INTERIOR `elements.move(at: position)`, which violates `Buffer.Linear`'s trailing-only
-    /// retraction contract. In `-Onone` that trips the buffer's `precondition`; in `-O` the
-    /// same `precondition` lowers to `Builtin.condfail`, i.e. a bare `ud2` (SIGILL) with no
-    /// diagnostic — the release-mode-only crash reported downstream. This is the exact
-    /// reported sequence: 16 inserts, then `remove(9)` followed by `remove(0)`.
+    /// Regression for the trailing-only seam trap.
+    ///
+    /// The removal dance used to open with an INTERIOR `elements.move(at: position)`, which
+    /// violates `Buffer.Linear`'s trailing-only retraction contract. In `-Onone` that trips
+    /// the buffer's `precondition`; in `-O` the same `precondition` lowers to
+    /// `Builtin.condfail`, i.e. a bare `ud2` (SIGILL) with no diagnostic — the
+    /// release-mode-only crash reported downstream. This is the exact reported sequence:
+    /// 16 inserts, then `remove(9)` followed by `remove(0)`.
     @Test
     func `interior removal rides the seam lawfully: sixteen inserts, then remove 9 and remove 0`() {
         var column = OrderedColumn<Int>(minimumCapacity: Index<Int>.Count(4))
@@ -319,10 +321,12 @@ struct `Hash Indexed Tests` {
         }
     }
 
-    /// A denser sweep of the same law: drain a 16-element column to empty under many
-    /// different removal ORDERS (varying where the walk starts and how far it strides),
-    /// checking insertion order and index coherence after every single removal. This
-    /// covers head, interior, and trailing removals, and the final one-element column.
+    /// A denser sweep of the same law.
+    ///
+    /// Drains a 16-element column to empty under many different removal ORDERS (varying
+    /// where the walk starts and how far it strides), checking insertion order and index
+    /// coherence after every single removal. This covers head, interior, and trailing
+    /// removals, and the final one-element column.
     @Test
     func `draining a sixteen-element column in any order preserves insertion order and coherence`() {
         var start = 0
