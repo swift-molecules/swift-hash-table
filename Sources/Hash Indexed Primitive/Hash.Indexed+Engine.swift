@@ -47,7 +47,9 @@ extension __HashIndexed where Dense: ~Copyable {
     public mutating func insert<E: ~Copyable>(_ element: consuming E) -> E?
     where Dense == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear {
         let hashValue = element.hashValue
-        let duplicate = indices.position(forHash: hashValue, context: element) { position, candidate in
+        let duplicate = indices.position(forHash: hashValue, context: element) {
+            position,
+            candidate in
             elements[position] == candidate
         }
         if duplicate != nil {
@@ -133,7 +135,8 @@ extension __HashIndexed where Dense: ~Copyable {
     /// - Complexity: O(`capacity`)
     @inlinable
     public func clone<E>() -> Self
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear, E: Copyable {
+    where Dense == Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear, E: Copyable
+    {
         var copy = Self(minimumCapacity: .zero)
         copy.elements = elements.clone()
         copy.indices = indices.clone()

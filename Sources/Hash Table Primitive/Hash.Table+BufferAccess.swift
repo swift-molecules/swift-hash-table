@@ -59,13 +59,17 @@ extension Hash.Table where Element: ~Copyable {
     @inlinable
     package subscript(bucketOfRank rank: Index<Element>) -> Bucket.Index {
         get {
-            let raw = _rankToBucket[Index<Int>(_unchecked: Ordinal(UInt(bitPattern: Int(bitPattern: rank))))]
+            let raw = _rankToBucket[
+                Index<Int>(_unchecked: Ordinal(UInt(bitPattern: Int(bitPattern: rank))))
+            ]
             return Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: raw)))
         }
         set {
             let raw = Int(bitPattern: rank)
             guard raw < Int(bitPattern: _rankToBucket.count) else { return }
-            _rankToBucket[Index<Int>(_unchecked: Ordinal(UInt(bitPattern: raw)))] = Int(bitPattern: newValue)
+            _rankToBucket[Index<Int>(_unchecked: Ordinal(UInt(bitPattern: raw)))] = Int(
+                bitPattern: newValue
+            )
         }
     }
 }

@@ -75,7 +75,11 @@ struct `Hash Table Engine Tests` {
         var table = Hash.Table<Int>(minimumCapacity: Index<Int>.Count(2))
         var i = 0
         while i < 64 {
-            table.insert(position: Index<Int>(Ordinal(UInt(i))), hashValue: typedHash(i), equals: { _ in false })
+            table.insert(
+                position: Index<Int>(Ordinal(UInt(i))),
+                hashValue: typedHash(i),
+                equals: { _ in false }
+            )
             i += 1
         }
         let n = table.count
@@ -110,7 +114,9 @@ struct `Hash Table Engine Tests` {
     }
 
     @Test
-    func `a collision cluster wrapping the table end: backward shift repairs wrapped-edge, head, and middle removes`() {
+    func
+        `a collision cluster wrapping the table end: backward shift repairs wrapped-edge, head, and middle removes`()
+    {
         var table = Hash.Table<Int>(minimumCapacity: .zero)  // bucket capacity 8
 
         // Deterministic placement THROUGH the per-instance seed: bucket selection
@@ -328,7 +334,8 @@ struct `Hash Indexed Tests` {
     /// coherence after every single removal. This covers head, interior, and trailing
     /// removals, and the final one-element column.
     @Test
-    func `draining a sixteen-element column in any order preserves insertion order and coherence`() {
+    func `draining a sixteen-element column in any order preserves insertion order and coherence`()
+    {
         var start = 0
         while start < 16 {
             var stride = 1
@@ -351,7 +358,10 @@ struct `Hash Indexed Tests` {
                     column.forEach { seen.append($0) }
                     #expect(seen == expected, "start \(start), stride \(stride), victim \(victim)")
                     let violations = Hash.Coherence.violations(column)
-                    #expect(violations.isEmpty, "start \(start), stride \(stride), victim \(victim): \(violations)")
+                    #expect(
+                        violations.isEmpty,
+                        "start \(start), stride \(stride), victim \(victim): \(violations)"
+                    )
                     let stillThere = column.contains(victim)
                     #expect(!stillThere, "start \(start), stride \(stride), victim \(victim)")
                     cursor += stride

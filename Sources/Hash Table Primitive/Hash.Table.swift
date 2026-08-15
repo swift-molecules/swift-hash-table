@@ -102,7 +102,13 @@ extension Hash {
         package var _seed: Int
 
         @usableFromInline
-        package var _buffer: Buffer<Store.Split<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>, Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>>.Slots
+        package var _buffer:
+            Buffer<
+                Store.Split<
+                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
+                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                >
+            >.Slots
 
         /// The rank→bucket back-pointer plane (B-7): for every LIVE rank,
         /// `_rankToBucket[rank]` names the bucket holding that rank's entry.
@@ -115,7 +121,8 @@ extension Hash {
         /// post-removal position fixup from the Θ(bucketCapacity) sweep into
         /// the documented O(n − rank) walk (`decrement(after:)`).
         @usableFromInline
-        package var _rankToBucket: Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>.Linear
+        package var _rankToBucket:
+            Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>.Linear
 
         // MARK: - Sentinels
 
@@ -135,7 +142,12 @@ extension Hash {
             let hashCapacity = Self.bucketCapacity(for: minimumCapacity)
             _count = .zero
             _seed = Self.makeSeed()
-            var buffer = Buffer<Store.Split<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>, Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>>.Slots(
+            var buffer = Buffer<
+                Store.Split<
+                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
+                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                >
+            >.Slots(
                 capacity: hashCapacity.retag(Int.self),
                 metadataInitial: Self.empty
             )
@@ -155,7 +167,8 @@ extension Hash {
             // Bulk zero-fill through the OutputSpan door — the per-element
             // seam append paid ~5 ns/bucket of growth-check + ledger traffic
             // (the init.sized regression caught at the W2 maintenance gate).
-            plane.append(addingCapacity: bucketCapacity.retag(Int.self)) { (span: inout Swift.OutputSpan<Int>) in
+            plane.append(addingCapacity: bucketCapacity.retag(Int.self)) {
+                (span: inout Swift.OutputSpan<Int>) in
                 while !span.isFull {
                     span.append(0)
                 }
@@ -170,7 +183,9 @@ extension Hash {
         /// Uses power-of-two sizing for fast modulo via bitmasking.
         /// Targets ~70% load factor.
         @inlinable
-        package static func bucketCapacity(for minimumCapacity: Index<Element>.Count) -> Index<Bucket>.Count {
+        package static func bucketCapacity(
+            for minimumCapacity: Index<Element>.Count
+        ) -> Index<Bucket>.Count {
             let minCap = Int(bitPattern: minimumCapacity)
             guard minCap > 0 else {
                 return Index<Bucket>.Count(Cardinal(8))

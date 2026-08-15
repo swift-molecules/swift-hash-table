@@ -39,7 +39,8 @@ extension Hash.Table where Element: ~Copyable {
         // B-8 span-first: the hash-plane base is hoisted ONCE for the whole
         // walk (under `Shared`, per-access subscripts re-derive it through the
         // box each step — the measured read tax).
-        return unsafe _buffer.withMetadataPointer { (hashes: UnsafePointer<Int>) -> Index<Element>? in
+        return unsafe _buffer.withMetadataPointer {
+            (hashes: UnsafePointer<Int>) -> Index<Element>? in
             while probes < capacity {
                 // WHY: `bucket` stays in [0, capacity) under the mask; the
                 // metadata span covers exactly [0, capacity).
@@ -50,7 +51,9 @@ extension Hash.Table where Element: ~Copyable {
                 }
 
                 if storedHash == hash {
-                    let position = self[position: Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))]
+                    let position = self[
+                        position: Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))
+                    ]
                     if equals(position) {
                         return position
                     }
@@ -91,7 +94,8 @@ extension Hash.Table where Element: ~Copyable {
         let mask = capacity &- 1
         var bucket = Int(bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount))
         var probes = 0
-        return unsafe _buffer.withMetadataPointer { (hashes: UnsafePointer<Int>) -> Index<Element>? in
+        return unsafe _buffer.withMetadataPointer {
+            (hashes: UnsafePointer<Int>) -> Index<Element>? in
             while probes < capacity {
                 // WHY: `bucket` stays in [0, capacity) under the mask.
                 let storedHash = unsafe hashes[bucket]
@@ -101,7 +105,9 @@ extension Hash.Table where Element: ~Copyable {
                 }
 
                 if storedHash == hash {
-                    let position = self[position: Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))]
+                    let position = self[
+                        position: Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))
+                    ]
                     if equals(position, context) {
                         return position
                     }
