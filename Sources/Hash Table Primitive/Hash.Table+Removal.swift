@@ -29,7 +29,9 @@ public import Store_Split_Primitives
 
 extension Hash.Table.Remove where Element: ~Copyable {
     /// The mutable accessor view for removal operations.
-    public typealias View = Property<Hash.Table<Element>.Remove, Hash.Table<Element>>.Inout.Typed<Element>
+    public typealias View = Property<Hash.Table<Element>.Remove, Hash.Table<Element>>.Inout.Typed<
+        Element
+    >
 }
 
 // MARK: - Removal (BACKWARD-SHIFT chain repair — tombstone-free)
@@ -182,13 +184,20 @@ where Tag == Hash.Table<Element>.Remove, Base == Hash.Table<Element>, Element: ~
             // and stale plane entries are never read.
         } else {
             let hashCapacity = Hash.Table<Element>.bucketCapacity(for: .zero)
-            var buffer = Buffer<Store.Split<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>, Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>>.Slots(
+            var buffer = Buffer<
+                Store.Split<
+                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
+                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                >
+            >.Slots(
                 capacity: hashCapacity.retag(Int.self),
                 metadataInitial: Hash.Table<Element>.empty
             )
             buffer.fill(payload: 0)
             base.value._buffer = buffer
-            base.value._rankToBucket = Hash.Table<Element>.makeRankPlane(bucketCapacity: hashCapacity)
+            base.value._rankToBucket = Hash.Table<Element>.makeRankPlane(
+                bucketCapacity: hashCapacity
+            )
             base.value._count = .zero
         }
     }

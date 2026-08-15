@@ -121,8 +121,14 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
 
     /// Back-append + hash-index (lawful ONLY at `slot == count`).
     @inlinable
-    public mutating func initialize(at slot: Index_Primitives.Index<Dense.Element>, to element: consuming Dense.Element) {
-        precondition(slot == elements.count.map(Ordinal.init), "indexed seam: initialize is lawful only at the back (slot == count)")
+    public mutating func initialize(
+        at slot: Index_Primitives.Index<Dense.Element>,
+        to element: consuming Dense.Element
+    ) {
+        precondition(
+            slot == elements.count.map(Ordinal.init),
+            "indexed seam: initialize is lawful only at the back (slot == count)"
+        )
         let hashValue = element.hashValue
         elements.initialize(at: slot, to: element)
         indices.insert(_unchecked: (), position: slot, hashValue: hashValue)
@@ -133,7 +139,10 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
     public mutating func move(at slot: Index_Primitives.Index<Dense.Element>) -> Dense.Element {
         let last: Index_Primitives.Index<Dense.Element> =
             elements.count.subtract.saturating(.one).map(Ordinal.init)
-        precondition(slot == last, "indexed seam: move is lawful only at the back (slot == count − 1)")
+        precondition(
+            slot == last,
+            "indexed seam: move is lawful only at the back (slot == count − 1)"
+        )
         let element = elements.move(at: slot)
         indices.remove(hashValue: element.hashValue, context: slot) { position, removed in
             position == removed

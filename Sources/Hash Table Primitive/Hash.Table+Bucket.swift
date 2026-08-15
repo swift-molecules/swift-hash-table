@@ -17,7 +17,8 @@ internal import Property_Primitives
 
 extension Hash.Table.Bucket.Ops where Element: ~Copyable {
     /// The mutable accessor view for bucket operations.
-    public typealias View = Property<Hash.Table<Element>.Bucket.Ops, Hash.Table<Element>>.Inout.Typed<Element>
+    public typealias View = Property<Hash.Table<Element>.Bucket.Ops, Hash.Table<Element>>.Inout
+        .Typed<Element>
 }
 
 extension Hash.Table where Element: ~Copyable {
@@ -66,7 +67,8 @@ where Tag == Hash.Table<Element>.Bucket.Ops, Base == Hash.Table<Element>, Elemen
     ///
     /// Usage: `table.bucket.next(currentBucket)`
     @inlinable
-    public func next(_ bucket: Hash.Table<Element>.Bucket.Index) -> Hash.Table<Element>.Bucket.Index {
+    public func next(_ bucket: Hash.Table<Element>.Bucket.Index) -> Hash.Table<Element>.Bucket.Index
+    {
         let capacity = base.value.bucketCapacity
         return Hash.Table<Element>.Bucket.Index.Modular.successor(of: bucket, capacity: capacity)
     }

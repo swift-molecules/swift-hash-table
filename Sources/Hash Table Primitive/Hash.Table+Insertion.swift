@@ -178,7 +178,12 @@ extension Hash.Table where Element: ~Copyable {
             Index<Bucket>.Count(Cardinal(8 as UInt)),
             oldCapacity * 2
         )
-        var newBuffer = Buffer<Store.Split<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>, Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>>.Slots(
+        var newBuffer = Buffer<
+            Store.Split<
+                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
+                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+            >
+        >.Slots(
             capacity: newCapacity.retag(Int.self),
             metadataInitial: Self.empty
         )
@@ -194,8 +199,13 @@ extension Hash.Table where Element: ~Copyable {
                 var targetBucket = Self.bucket(for: hash, seed: newSeed, capacity: newCapacity)
 
                 var probes: Index<Bucket>.Count = .zero
-                while newBuffer[metadata: targetBucket.retag(Int.self)] != Self.empty && probes < newCapacity {
-                    targetBucket = Bucket.Index.Modular.successor(of: targetBucket, capacity: newCapacity)
+                while newBuffer[metadata: targetBucket.retag(Int.self)] != Self.empty
+                    && probes < newCapacity
+                {
+                    targetBucket = Bucket.Index.Modular.successor(
+                        of: targetBucket,
+                        capacity: newCapacity
+                    )
                     probes += .one
                 }
 
@@ -205,7 +215,9 @@ extension Hash.Table where Element: ~Copyable {
                 // Same dense-rank guard as the `bucketOfRank` setter: sparse
                 // consumer positions beyond the plane skip maintenance.
                 if rankRaw < Int(bitPattern: newPlane.count) {
-                    newPlane[Index<Int>(_unchecked: Ordinal(UInt(bitPattern: rankRaw)))] = Int(bitPattern: targetBucket)
+                    newPlane[Index<Int>(_unchecked: Ordinal(UInt(bitPattern: rankRaw)))] = Int(
+                        bitPattern: targetBucket
+                    )
                 }
                 remaining = remaining.subtract.saturating(.one)
             }

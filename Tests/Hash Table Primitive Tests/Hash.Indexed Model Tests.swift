@@ -132,7 +132,9 @@ private func audit(_ column: borrowing OrderedColumn<Key>, against model: Refere
         }
         let position = column.position(of: member)
         if position != slot {
-            findings.append("position(of: id \(member.id)): \(String(describing: position)), model slot \(offset)")
+            findings.append(
+                "position(of: id \(member.id)): \(String(describing: position)), model slot \(offset)"
+            )
         }
     }
 
@@ -238,7 +240,9 @@ extension OrderedStream {
         verdict.record("pos id=\(pick.id) @\(index)")
         let position = column.position(of: pick)
         if position != Index<Key>(Ordinal(UInt(index))) {
-            verdict.diverged(["position(of: id \(pick.id)): \(String(describing: position)), model \(index)"])
+            verdict.diverged([
+                "position(of: id \(pick.id)): \(String(describing: position)), model \(index)"
+            ])
         }
     }
 
@@ -434,7 +438,9 @@ extension EngineStream {
             equals: { $0 == occupant }
         )
         if removed != occupant {
-            verdict.diverged(["remove(id \(id)) returned \(String(describing: removed)), model \(entry.position)"])
+            verdict.diverged([
+                "remove(id \(id)) returned \(String(describing: removed)), model \(entry.position)"
+            ])
         }
         liveIDs.remove(at: pick)
         byID[id] = nil
@@ -446,7 +452,9 @@ extension EngineStream {
         verdict.record("absent id=\(key.id)")
         let removed = table.remove(hashValue: typedHash(key), equals: { _ in false })
         if removed != nil {
-            verdict.diverged(["remove of never-inserted id \(key.id) returned \(String(describing: removed))"])
+            verdict.diverged([
+                "remove of never-inserted id \(key.id) returned \(String(describing: removed))"
+            ])
         }
     }
 
@@ -458,9 +466,13 @@ extension EngineStream {
         }
         verdict.record("find id=\(id)")
         let expected = positionIndex(entry.position)
-        let found = table.position(forHash: typedHash(Key(id: id, group: entry.group))) { $0 == expected }
+        let found = table.position(forHash: typedHash(Key(id: id, group: entry.group))) {
+            $0 == expected
+        }
         if found != expected {
-            verdict.diverged(["lookup(id \(id)): \(String(describing: found)), model \(entry.position)"])
+            verdict.diverged([
+                "lookup(id \(id)): \(String(describing: found)), model \(entry.position)"
+            ])
         }
     }
 
@@ -469,7 +481,9 @@ extension EngineStream {
         verdict.record("miss id=\(key.id)")
         let found = table.position(forHash: typedHash(key), equals: { _ in false })
         if found != nil {
-            verdict.diverged(["never-inserted id \(key.id) resolved to \(String(describing: found))"])
+            verdict.diverged([
+                "never-inserted id \(key.id) resolved to \(String(describing: found))"
+            ])
         }
     }
 
@@ -505,15 +519,23 @@ extension EngineStream {
         for id in liveIDs {
             guard let entry = byID[id] else { continue }
             let expected = positionIndex(entry.position)
-            let found = table.position(forHash: typedHash(Key(id: id, group: entry.group))) { $0 == expected }
+            let found = table.position(forHash: typedHash(Key(id: id, group: entry.group))) {
+                $0 == expected
+            }
             if found != expected {
-                findings.append("live id \(id): position \(String(describing: found)), model \(entry.position)")
+                findings.append(
+                    "live id \(id): position \(String(describing: found)), model \(entry.position)"
+                )
             }
         }
         for retired in graveyard where byID[retired.id] == nil {
-            let ghost = table.position(forHash: typedHash(Key(id: retired.id, group: retired.group))) { _ in false }
+            let ghost = table.position(
+                forHash: typedHash(Key(id: retired.id, group: retired.group))
+            ) { _ in false }
             if ghost != nil {
-                findings.append("retired id \(retired.id) still resolves to \(String(describing: ghost))")
+                findings.append(
+                    "retired id \(retired.id) still resolves to \(String(describing: ghost))"
+                )
             }
         }
         var bucket: Hash.Table<Key>.Bucket.Index = .zero
@@ -524,7 +546,9 @@ extension EngineStream {
             bucket = bucket.successor.saturating()
         }
         if liveBuckets != liveIDs.count {
-            findings.append("\(liveBuckets) occupied buckets, model \(liveIDs.count) (tombstone-free: occupied == count)")
+            findings.append(
+                "\(liveBuckets) occupied buckets, model \(liveIDs.count) (tombstone-free: occupied == count)"
+            )
         }
         return findings
     }
@@ -579,7 +603,10 @@ extension Model.Element.Tracked: @retroactive Hash.`Protocol` {
     }
 
     /// Compares two tracked elements by identity.
-    public static func == (lhs: borrowing Model.Element.Tracked, rhs: borrowing Model.Element.Tracked) -> Bool {
+    public static func == (
+        lhs: borrowing Model.Element.Tracked,
+        rhs: borrowing Model.Element.Tracked
+    ) -> Bool {
         lhs.id == rhs.id
     }
 }
@@ -595,7 +622,9 @@ private struct TrackedStream: ~Copyable {
 
     init(seed: UInt64, census: Model.Census) {
         var rng = Model.Random(seed: seed)
-        self.column = OrderedColumn<Model.Element.Tracked>(minimumCapacity: Index<Model.Element.Tracked>.Count(UInt(rng.below(9))))
+        self.column = OrderedColumn<Model.Element.Tracked>(
+            minimumCapacity: Index<Model.Element.Tracked>.Count(UInt(rng.below(9)))
+        )
         self.rng = rng
         self.verdict = Model.Verdict(seed: seed)
         self.census = census
@@ -679,7 +708,9 @@ extension TrackedStream {
         verdict.record("pos id=\(pick.id) @\(index)")
         let position = column.position(of: probe(pick))
         if position != Index<Model.Element.Tracked>(Ordinal(UInt(index))) {
-            verdict.diverged(["position(of: id \(pick.id)): \(String(describing: position)), model \(index)"])
+            verdict.diverged([
+                "position(of: id \(pick.id)): \(String(describing: position)), model \(index)"
+            ])
         }
     }
 
@@ -722,11 +753,15 @@ extension TrackedStream {
             let slot = Index<Model.Element.Tracked>(Ordinal(UInt(offset)))
             let resident = column[slot].id
             if resident != member.id {
-                findings.append("slot \(offset): column holds id \(resident), model id \(member.id)")
+                findings.append(
+                    "slot \(offset): column holds id \(resident), model id \(member.id)"
+                )
             }
             let position = column.position(of: probe(member))
             if position != slot {
-                findings.append("position(of: id \(member.id)): \(String(describing: position)), model slot \(offset)")
+                findings.append(
+                    "position(of: id \(member.id)): \(String(describing: position)), model slot \(offset)"
+                )
             }
         }
         return findings
@@ -791,7 +826,9 @@ struct `Hash.Indexed Model` {
 
 extension `Hash.Indexed Model`.Integration {
     @Test(arguments: Model.seeds(default: [0x5EED_0001, 0xC0FF_EE42, 0xDECA_DE77]))
-    func `ordered column op stream matches the reference model under forced collisions`(seed: UInt64) {
+    func `ordered column op stream matches the reference model under forced collisions`(
+        seed: UInt64
+    ) {
         let verdict = runOrderedStream(seed: seed, collisionDivisor: 4)
         #expect(verdict.isClean, Comment(rawValue: verdict.report))
     }
@@ -900,9 +937,14 @@ extension `Hash.Indexed Model`.`Edge Case` {
     func `duplicate hand-back returns the argument instance, never the member`() {
         let census = Model.Census()
         do {
-            var column = OrderedColumn<Model.Element.Tracked>(minimumCapacity: Index<Model.Element.Tracked>.Count(4))
-            column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))  // serial 0: the member
-            if let rejected = column.insert(Model.Element.Tracked(id: 1, group: 0, census: census)) {  // serial 1
+            var column = OrderedColumn<Model.Element.Tracked>(
+                minimumCapacity: Index<Model.Element.Tracked>.Count(4)
+            )
+            // serial 0: the member
+            column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))
+            // serial 1
+            if let rejected = column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))
+            {
                 let serial = rejected.serial
                 #expect(serial == 1)
             } else {
@@ -910,7 +952,9 @@ extension `Hash.Indexed Model`.`Edge Case` {
             }
             let diedMid = census.died.sorted()
             #expect(diedMid == [1])  // the argument died; the member lives
-            let stillContained = column.contains(Model.Element.Tracked(id: 1, group: 0, census: census))
+            let stillContained = column.contains(
+                Model.Element.Tracked(id: 1, group: 0, census: census)
+            )
             #expect(stillContained)
         }
         let born = census.born.sorted()

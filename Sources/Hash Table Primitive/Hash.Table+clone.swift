@@ -38,7 +38,12 @@ extension Hash.Table where Element: ~Copyable {
     @inlinable
     public borrowing func clone() -> Self {
         var copy = Self(minimumCapacity: .zero)
-        var fresh = Buffer<Store.Split<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>, Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>>.Slots(
+        var fresh = Buffer<
+            Store.Split<
+                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
+                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+            >
+        >.Slots(
             capacity: self.bucketCapacity.retag(Int.self),
             metadataInitial: Self.empty
         )

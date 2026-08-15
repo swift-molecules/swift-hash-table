@@ -16,7 +16,8 @@ internal import Property_Primitives
 
 extension Hash.Table.Positions where Element: ~Copyable {
     /// The mutable accessor view for position-update operations.
-    public typealias View = Property<Hash.Table<Element>.Positions, Hash.Table<Element>>.Inout.Typed<Element>
+    public typealias View = Property<Hash.Table<Element>.Positions, Hash.Table<Element>>.Inout
+        .Typed<Element>
 }
 
 extension Hash.Table where Element: ~Copyable {
