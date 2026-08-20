@@ -11,7 +11,7 @@
 
 import Affine_Primitives_Standard_Library_Integration
 public import Buffer_Slots_Primitive
-public import Hash_Primitives
+import Hash_Primitives
 public import Index_Primitives
 import Ordinal_Primitives_Standard_Library_Integration
 

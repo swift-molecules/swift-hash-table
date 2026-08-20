@@ -13,7 +13,7 @@ public import Buffer_Linear_Primitive
 import Buffer_Primitive
 public import Buffer_Slots_Primitive
 import Buffer_Slots_Primitives
-public import Hash_Primitives
+import Hash_Primitives
 public import Index_Primitives
 public import Memory_Allocator_Primitive
 public import Memory_Heap_Primitives

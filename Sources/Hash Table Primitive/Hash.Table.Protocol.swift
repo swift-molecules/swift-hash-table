@@ -10,7 +10,7 @@
 // ===----------------------------------------------------------------------===//
 
 public import Hash_Primitives
-public import Index_Primitives
+import Index_Primitives
 
 // MARK: - Hash.Table.Protocol (Hoisted as __HashTableProtocol)
 

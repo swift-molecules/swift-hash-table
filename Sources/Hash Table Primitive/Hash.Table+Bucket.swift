@@ -10,7 +10,7 @@
 // ===----------------------------------------------------------------------===//
 
 public import Cyclic_Index_Primitives
-public import Hash_Primitives
+import Hash_Primitives
 public import Index_Primitives
 import Ordinal_Primitives
 internal import Property_Primitives

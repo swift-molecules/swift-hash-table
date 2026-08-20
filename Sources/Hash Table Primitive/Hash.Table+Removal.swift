@@ -12,10 +12,10 @@
 import Affine_Primitives_Standard_Library_Integration
 public import Buffer_Primitive
 public import Buffer_Slots_Primitive
-public import Buffer_Slots_Primitives
+import Buffer_Slots_Primitives
 import Cardinal_Primitives
 public import Cyclic_Index_Primitives
-public import Hash_Primitives
+import Hash_Primitives
 public import Index_Primitives
 public import Memory_Allocator_Primitive
 public import Memory_Heap_Primitives

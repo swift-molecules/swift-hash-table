@@ -13,7 +13,7 @@ import Affine_Primitives_Standard_Library_Integration
 public import Buffer_Linear_Primitive
 import Buffer_Linear_Primitives
 public import Buffer_Primitive
-public import Hash_Primitives
+import Hash_Primitives
 public import Hash_Table_Primitive
 public import Index_Primitives
 public import Memory_Allocator_Primitive
