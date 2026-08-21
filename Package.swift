@@ -12,7 +12,7 @@ let package = Package(
         .visionOS(.v27),
     ],
     products: [
-        // MARK: - Base (the position-index engine)
+
         .library(
             name: "Hash Table Primitive",
             targets: ["Hash Table Primitive"]
@@ -22,17 +22,11 @@ let package = Package(
             targets: ["Hash Table Primitives"]
         ),
 
-        // MARK: - The ordered hashed COLUMN (dense elements + the engine)
         .library(
             name: "Hash Indexed Primitive",
             targets: ["Hash Indexed Primitive"]
         ),
 
-        // MARK: - Static variant: DELETED at the ADT-families reshape (its inline Slots
-        // substrate was dissolved at W3b; re-materializes over a Store.Inline-based
-        // Slots when a consumer needs it — W5 ledger)
-
-        // MARK: - Test Support
         .library(
             name: "Hash Table Primitives Test Support",
             targets: ["Hash Table Primitives Test Support"]
@@ -106,8 +100,6 @@ let package = Package(
     ],
     targets: [
 
-        // MARK: - Base type (Hash.Table: the open-addressed position-index engine over the
-        // reshaped Slots column; tombstone-free backward-shift; per-instance seed)
         .target(
             name: "Hash Table Primitive",
             dependencies: [
@@ -148,7 +140,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - The ordered hashed column (Hash.Indexed<Dense> + Hash.Key)
         .target(
             name: "Hash Indexed Primitive",
             dependencies: [
@@ -187,7 +178,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Ops + Umbrella ([MOD-005]: re-exports the in-package modules only)
         .target(
             name: "Hash Table Primitives",
             dependencies: [
@@ -196,7 +186,6 @@ let package = Package(
             ]
         ),
 
-        // MARK: - Test Support (the index-coherence law suite)
         .target(
             name: "Hash Table Primitives Test Support",
             dependencies: [
@@ -206,7 +195,6 @@ let package = Package(
             path: "Tests/Support"
         ),
 
-        // MARK: - Tests
         .testTarget(
             name: "Hash Table Primitive Tests",
             dependencies: [

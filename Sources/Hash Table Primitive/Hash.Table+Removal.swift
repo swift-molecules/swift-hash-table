@@ -1,14 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-primitives open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-primitives project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
 import Affine_Primitives_Standard_Library_Integration
 public import Buffer_Primitive
 public import Buffer_Slots_Primitive
@@ -28,24 +17,14 @@ public import Store_Primitive
 public import Store_Split_Primitives
 
 extension Hash.Table.Remove where Element: ~Copyable {
-    /// The mutable accessor view for removal operations.
+
     public typealias View = Property<Hash.Table<Element>.Remove, Hash.Table<Element>>.Inout.Typed<
         Element
     >
 }
 
-// MARK: - Removal (BACKWARD-SHIFT chain repair — tombstone-free)
-//
-// The ADT-families reshape adopted the upstream consensus (stdlib `HashTable.swift:467–508`
-// "If we've put a hole in a chain of contiguous elements, some element after the hole may
-// belong where the new hole is"; swift-collections `_HTable+Removal.swift` "Our hash table
-// does not have tombstones"): emptying a bucket walks the chain after it and relocates any
-// entry whose IDEAL bucket lies cyclically at-or-before the hole, so probe chains stay
-// contiguous and `empty` remains the only sentinel. The former `deleted` sentinel and the
-// `rehash()` compaction pass are gone with it.
-
 extension Hash.Table where Element: ~Copyable {
-    /// Cyclic distance from `from` to `to` (power-of-two capacity mask).
+
     @inlinable
     package func _distance(from: Bucket.Index, to: Bucket.Index) -> UInt {
         let mask = UInt(bitPattern: Int(bitPattern: bucketCapacity)) &- 1
@@ -54,16 +33,13 @@ extension Hash.Table where Element: ~Copyable {
         return (rawTo &- rawFrom) & mask
     }
 
-    /// Repairs the probe chain after `hole` was emptied: relocates displaced entries
-    /// backward into the hole until the chain's end.
     @inlinable
     package mutating func _shiftChain(into emptied: Bucket.Index) {
         var hole = emptied
         var current = Bucket.Index.Modular.successor(of: hole, capacity: bucketCapacity)
         while self[hash: current] != Self.empty {
             let ideal = Self.bucket(for: self[hash: current], seed: _seed, capacity: bucketCapacity)
-            // The entry may move back iff the hole lies within its displacement span:
-            // distance(ideal → hole) < distance(ideal → current).
+
             if _distance(from: ideal, to: hole) < _distance(from: ideal, to: current) {
                 self[hash: hole] = self[hash: current]
                 self[position: hole] = self[position: current]
@@ -75,13 +51,6 @@ extension Hash.Table where Element: ~Copyable {
         }
     }
 
-    /// Removes an element from the hash table.
-    ///
-    /// - Parameters:
-    ///   - hashValue: The hash value of the element to remove.
-    ///   - equals: A closure that checks if the element at a given position
-    ///     matches the element to remove.
-    /// - Returns: The typed position that was removed, or `nil` if not found.
     @inlinable
     @discardableResult
     public mutating func remove(
@@ -99,18 +68,6 @@ extension Hash.Table where Element: ~Copyable {
         return position
     }
 
-    /// Removes an element from the hash table, passing a context value
-    /// through to the equality closure instead of capturing it.
-    ///
-    /// This overload avoids capturing the search element in the closure,
-    /// which is required when the element is `borrowing` and `~Copyable`.
-    ///
-    /// - Parameters:
-    ///   - hashValue: The hash value of the element to remove.
-    ///   - context: A value passed through to `equals` on each probe.
-    ///   - equals: A closure that checks if the element at a given position
-    ///     matches the context.
-    /// - Returns: The typed position that was removed, or `nil` if not found.
     @inlinable
     @discardableResult
     public mutating func remove<Context: ~Copyable>(
@@ -147,9 +104,6 @@ extension Hash.Table where Element: ~Copyable {
         return nil
     }
 
-    /// Removes the element at a specific bucket.
-    ///
-    /// - Parameter bucketIdx: The bucket index to remove.
     @inlinable
     public mutating func remove(at bucketIdx: Bucket.Index) {
         precondition(self[hash: bucketIdx] != Self.empty)
@@ -158,7 +112,6 @@ extension Hash.Table where Element: ~Copyable {
         _shiftChain(into: bucketIdx)
     }
 
-    /// Access remove operations.
     @inlinable
     public var remove: Remove.View {
         mutating _read {
@@ -173,15 +126,14 @@ extension Hash.Table where Element: ~Copyable {
 
 extension Property.Inout.Typed
 where Tag == Hash.Table<Element>.Remove, Base == Hash.Table<Element>, Element: ~Copyable {
-    /// Removes all elements.
+
     @inlinable
     public mutating func all(keepingCapacity: Bool = false) {
         if keepingCapacity {
             base.value._buffer.fill(metadata: Hash.Table<Element>.empty)
             base.value._buffer.fill(payload: 0)
             base.value._count = .zero
-            // The rank plane needs no work: every rank dies with the count,
-            // and stale plane entries are never read.
+
         } else {
             let hashCapacity = Hash.Table<Element>.bucketCapacity(for: .zero)
             var buffer = Buffer<

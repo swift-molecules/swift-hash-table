@@ -1,14 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-primitives open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-primitives project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
 import Affine_Primitives_Standard_Library_Integration
 public import Buffer_Linear_Primitive
 public import Buffer_Primitive
@@ -26,15 +15,8 @@ public import Storage_Primitive
 public import Store_Primitive
 public import Store_Split_Primitives
 
-// MARK: - Explicit deep copy (the composite's clone strategy)
-//
-// Seed-and-layout-preserving (NO rehash) — the stdlib `copy()` discipline: a clone is a
-// verbatim plane copy, so probe chains and bucket positions are identical and cloning
-// stays O(capacity) with no hashing. (Growth, by contrast, re-seeds — see `grow()`.)
 extension Hash.Table where Element: ~Copyable {
-    /// Returns an independent copy with identical layout, seed, and contents.
-    ///
-    /// - Complexity: O(`capacity`)
+
     @inlinable
     public borrowing func clone() -> Self {
         var copy = Self(minimumCapacity: .zero)

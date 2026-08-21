@@ -13,37 +13,15 @@ import Storage_Primitive
 import Tagged_Primitives_Standard_Library_Integration
 import Testing
 
-// The W1 proving suite (arc-2, model-based randomized testing): SEEDED op streams
-// drive the ordered hashed column AND the bare engine against trivially-correct
-// reference models, with full-state equivalence + the Hash.Coherence laws between
-// ops. A divergence fails with seed + full op transcript — the replayable repro.
-//
-// Determinism: the op STREAM is fully deterministic per seed (generation reads
-// model state only, never SUT state). Bucket LAYOUT is not replayable by design:
-// stdlib `Hasher` is per-process seeded and the engine's per-instance `_seed` is
-// random (`SWIFT_DETERMINISTIC_HASHING=1` pins the former; nothing pins the
-// latter). Logic divergences replay exactly; layout-shape findings replay
-// statistically across the seed set.
-//
-// Shape constraint: each op is its OWN small method on a ~Copyable stream struct.
-// A single large stream body (loop + 10-case switch + move-only traffic) sends
-// 6.3.2's -Onone `MovedAsyncVarDebugInfoPropagator` SIL pass into a >1h spin
-// (evidence: /tmp/arc2-w1-silhang/). Keep stream bodies small.
-
 private typealias HeapStorage<E: ~Copyable> =
     Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>
 
 private typealias DenseColumn<E: ~Copyable> = Buffer<HeapStorage<E>>.Linear
 private typealias OrderedColumn<E: Hash.Key & ~Copyable> = Hash.Indexed<DenseColumn<E>>
 
-/// Routes through the PROTOCOL's typed accessor (the stdlib `Int.hashValue`
-/// shadows it in concrete contexts).
 private func typedHash<T: Hash.`Protocol` & ~Copyable>(_ value: borrowing T) -> Hash.Value {
     value.hashValue
 }
-
-// MARK: - The member fixture: equality binds to `id`, hashing binds to `group`
-// (hash coarser than equality = lawful collisions on demand)
 
 private struct Key {
     let id: Int
@@ -69,14 +47,10 @@ extension Key: Hash.`Protocol` {
     }
 }
 
-// MARK: - The reference model: an insertion-ordered member list (stdlib value
-// semantics; position = array index; removal = order-preserving remove(at:))
-
 private struct Reference {
     var members: [Key] = []
     var ids: Swift.Set<Int> = []
-    /// Retired (id, group) pairs: miss-probes aimed into the exact chains the
-    /// ids used to occupy (a stale entry would resurface here).
+
     var graveyard: [(id: Int, group: Int)] = []
 }
 
@@ -114,8 +88,6 @@ extension Reference {
     }
 }
 
-/// Full-state equivalence + the engine's own laws: count, per-slot insertion
-/// order, findability at the model position, graveyard misses, Hash.Coherence 1–3.
 private func audit(_ column: borrowing OrderedColumn<Key>, against model: Reference) -> [String] {
     var findings: [String] = []
 
@@ -147,8 +119,6 @@ private func audit(_ column: borrowing OrderedColumn<Key>, against model: Refere
     findings.append(contentsOf: Hash.Coherence.violations(column))
     return findings
 }
-
-// MARK: - The ordered-column op stream
 
 private struct OrderedStream: ~Copyable {
     var column: OrderedColumn<Key>
@@ -345,9 +315,6 @@ private func runOrderedStream(seed: UInt64, collisionDivisor: Int) -> Model.Verd
     stream.run()
     return stream.finish()
 }
-
-// MARK: - The bare-engine op stream (the checked-insert door + chain repair,
-// positions = append-only mint order over hypothetical external storage)
 
 private struct EngineStream: ~Copyable {
     var table: Hash.Table<Key>
@@ -591,18 +558,12 @@ private func runEngineStream(seed: UInt64) -> Model.Verdict {
     return stream.finish()
 }
 
-// MARK: - The move-only stream: exact teardown accounting (every mint dies once)
-// (The teardown recorder + the tracked element are the hoisted Model fixtures —
-// W3-0; the hashed key bound stays a consumer-side conformance: equality binds
-// to `id`, hashing to `group`, hash coarser than equality = lawful collisions.)
-
 extension Model.Element.Tracked: @retroactive Hash.`Protocol` {
-    /// Combines the element's group into the hasher.
+
     public borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(group)
     }
 
-    /// Compares two tracked elements by identity.
     public static func == (
         lhs: borrowing Model.Element.Tracked,
         rhs: borrowing Model.Element.Tracked
@@ -805,7 +766,7 @@ private func runTrackedStream(seed: UInt64) -> Model.Verdict {
     let census = Model.Census()
     var stream = TrackedStream(seed: seed, census: census)
     stream.run()
-    var verdict = stream.finish()  // consumes the stream: the column tears down here
+    var verdict = stream.finish()
 
     if census.born.sorted() != census.died.sorted() {
         verdict.findings.append(
@@ -814,8 +775,6 @@ private func runTrackedStream(seed: UInt64) -> Model.Verdict {
     }
     return verdict
 }
-
-// MARK: - The suites
 
 @Suite
 struct `Hash.Indexed Model` {
@@ -940,9 +899,9 @@ extension `Hash.Indexed Model`.`Edge Case` {
             var column = OrderedColumn<Model.Element.Tracked>(
                 minimumCapacity: Index<Model.Element.Tracked>.Count(4)
             )
-            // serial 0: the member
+
             column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))
-            // serial 1
+
             if let rejected = column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))
             {
                 let serial = rejected.serial
@@ -951,7 +910,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
                 Issue.record("expected the duplicate to be handed back")
             }
             let diedMid = census.died.sorted()
-            #expect(diedMid == [1])  // the argument died; the member lives
+            #expect(diedMid == [1])
             let stillContained = column.contains(
                 Model.Element.Tracked(id: 1, group: 0, census: census)
             )
@@ -959,7 +918,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
         }
         let born = census.born.sorted()
         let died = census.died.sorted()
-        #expect(born == died)  // exactness over the whole scope
+        #expect(born == died)
     }
 
     @Test
@@ -968,7 +927,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
         column.insert(Key(id: 10, group: 3))
         let slot = Index<Key>(Ordinal(UInt(0)))
 
-        column[slot] = Key(id: 11, group: 3)  // same group: the no-re-index branch
+        column[slot] = Key(id: 11, group: 3)
         let oldGone = column.contains(Key(id: 10, group: 3))
         let newFound = column.position(of: Key(id: 11, group: 3))
         #expect(!oldGone)
@@ -976,7 +935,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
         let coherentSame = Hash.Coherence.violations(column)
         #expect(coherentSame.isEmpty, "\(coherentSame)")
 
-        column[slot] = Key(id: 12, group: 9)  // hash change: the re-index branch
+        column[slot] = Key(id: 12, group: 9)
         let elevenGone = column.contains(Key(id: 11, group: 3))
         let twelveFound = column.position(of: Key(id: 12, group: 9))
         #expect(!elevenGone)

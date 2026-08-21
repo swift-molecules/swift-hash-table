@@ -1,14 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-primitives open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-primitives project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
 public import Buffer_Linear_Primitive
 public import Buffer_Primitive
 public import Hash_Indexed_Primitive
@@ -22,29 +11,18 @@ public import Storage_Contiguous_Primitives
 public import Storage_Primitive
 
 extension Hash {
-    /// THE INDEX-COHERENCE LAWS (seat-ruled, 2026-06-10) — the [DS-024] sibling for the
-    /// ordered hashed family: the bucket engine and the dense plane must agree.
-    ///
-    ///   law 1 — every dense position is findable through the engine;
-    ///   law 2 — every live bucket entry's position is a live dense slot whose stored
-    ///           hash matches the member at that slot;
-    ///   law 3 — the engine's count equals the dense count.
-    ///
-    /// Every composition of `Hash.Indexed` (direct and `Shared`-wrapped) runs these from
-    /// its consuming family's suite.
+
     public enum Coherence {}
 }
 
 extension Hash.Coherence {
-    /// Runs the coherence laws over a column populated by `populate` and returns
-    /// human-readable descriptions of every violation (empty = coherent).
+
     public static func violations<E: Hash.Key & Copyable>(
         _ column: borrowing Hash.Indexed<Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>>.Linear>
     ) -> [String] {
         var found: [String] = []
         let end = column.count.map(Ordinal.init)
 
-        // law 1 — every dense position is findable through the engine.
         var slot: Index<E> = .zero
         while slot < end {
             let foundPosition = column.position(of: column[slot])
@@ -54,9 +32,6 @@ extension Hash.Coherence {
             slot = slot.successor.saturating()
         }
 
-        // law 2 — every live bucket entry's position is a live dense slot whose
-        // stored hash matches the member at that slot (the stale-entry detector:
-        // a stale entry probes `equals` against a vacated or repurposed dense slot).
         var bucket: Hash.Table<E>.Bucket.Index = .zero
         let bucketEnd = column.indices.bucketCapacity.map(Ordinal.init)
         var liveEntries: Index<E>.Count = .zero
@@ -77,8 +52,6 @@ extension Hash.Coherence {
             bucket = bucket.successor.saturating()
         }
 
-        // law 3 — the ENGINE's count equals the dense count; and (tombstone-free,
-        // occupied == count) the live bucket entries are exactly that many.
         if column.indices._count != column.count {
             found.append("law 3: the engine counts \(column.indices._count) but the dense plane holds \(column.count)")
         }
@@ -86,8 +59,6 @@ extension Hash.Coherence {
             found.append("law 3: \(liveEntries) live bucket entries but the dense plane holds \(column.count)")
         }
 
-        // law 4 — every live bucket's rank back-pointer round-trips (the B-7
-        // plane: maintained at placement, chain repair, and growth).
         bucket = .zero
         while bucket < bucketEnd {
             if column.indices[hash: bucket] != Hash.Table<E>.empty {

@@ -1,14 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// This source file is part of the swift-primitives open source project
-//
-// Copyright (c) 2024-2026 Coen ten Thije Boonkkamp and the swift-primitives project authors
-// Licensed under Apache License v2.0
-//
-// See LICENSE for license information
-//
-// ===----------------------------------------------------------------------===//
-
 import Affine_Primitives_Standard_Library_Integration
 public import Buffer_Linear_Primitive
 public import Buffer_Primitive
@@ -27,14 +16,7 @@ public import Store_Primitive
 public import Store_Split_Primitives
 
 extension Hash.Table where Element: ~Copyable {
-    /// Inserts an element's position into the hash table.
-    ///
-    /// - Parameters:
-    ///   - position: The typed position in external storage.
-    ///   - hashValue: The hash value of the element.
-    ///   - equals: A closure that checks if the element at a given position
-    ///     matches. Used to detect duplicates.
-    /// - Returns: `true` if inserted, `false` if duplicate found.
+
     @inlinable
     @discardableResult
     public mutating func insert(
@@ -65,7 +47,7 @@ extension Hash.Table where Element: ~Copyable {
             if storedHash == hash {
                 let existingPosition = self[position: currentBucket]
                 if equals(existingPosition) {
-                    return false  // Duplicate
+                    return false
                 }
             }
 
@@ -76,19 +58,6 @@ extension Hash.Table where Element: ~Copyable {
         return false
     }
 
-    /// Inserts an element's position into the hash table,
-    /// passing a context value through to the equality closure.
-    ///
-    /// This overload avoids capturing the search element in the closure,
-    /// which is required when the element is `borrowing` and `~Copyable`.
-    ///
-    /// - Parameters:
-    ///   - position: The typed position in external storage.
-    ///   - hashValue: The hash value of the element.
-    ///   - context: A value passed through to `equals` on each probe.
-    ///   - equals: A closure that checks if the element at a given position
-    ///     matches the context. Used to detect duplicates.
-    /// - Returns: `true` if inserted, `false` if duplicate found.
     @inlinable
     @discardableResult
     public mutating func insert<Context: ~Copyable>(
@@ -131,12 +100,6 @@ extension Hash.Table where Element: ~Copyable {
         return false
     }
 
-    /// Inserts without checking for duplicates.
-    ///
-    /// - Parameters:
-    ///   - _unchecked: A marker selecting the duplicate-unchecked overload.
-    ///   - position: The typed position in external storage.
-    ///   - hashValue: The hash value of the element.
     @inlinable
     public mutating func insert(
         _unchecked: Void,
@@ -168,8 +131,6 @@ extension Hash.Table where Element: ~Copyable {
         }
     }
 
-    /// Doubles the capacity and rehashes all elements (the per-instance seed is
-    /// REGENERATED here — the stdlib quadratic-copy defense).
     @inlinable
     package mutating func grow() {
         let oldCapacity = bucketCapacity
@@ -212,8 +173,7 @@ extension Hash.Table where Element: ~Copyable {
                 newBuffer[metadata: targetBucket.retag(Int.self)] = hash
                 let rankRaw = Int(bitPattern: position)
                 newBuffer[payload: targetBucket.retag(Int.self)] = rankRaw
-                // Same dense-rank guard as the `bucketOfRank` setter: sparse
-                // consumer positions beyond the plane skip maintenance.
+
                 if rankRaw < Int(bitPattern: newPlane.count) {
                     newPlane[Index<Int>(_unchecked: Ordinal(UInt(bitPattern: rankRaw)))] = Int(
                         bitPattern: targetBucket
