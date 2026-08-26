@@ -1,7 +1,7 @@
-public import Hash_Primitives
-public import Index_Primitives
-import Ordinal_Primitives
-internal import Property_Primitives
+public import Hash
+public import Index
+import Ordinal
+internal import Property
 
 extension Hash.Table.Positions where Element: ~Copyable {
 

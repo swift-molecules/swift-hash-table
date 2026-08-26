@@ -1,6 +1,6 @@
-public import Hash_Primitives
-public import Index_Primitives
-internal import Property_Primitives
+public import Hash
+public import Index
+internal import Property
 
 extension Hash.Table.ForEach where Element: ~Copyable {
 

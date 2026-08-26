@@ -1,9 +1,9 @@
-public import Buffer_Protocol_Primitives
-public import Hash_Primitives
+public import Buffer_Protocol
+public import Hash
 public import Hash_Table_Primitive
-public import Index_Primitives
-import Ordinal_Primitives_Standard_Library_Integration
-public import Store_Protocol_Primitives
+public import Index
+import Ordinal_Standard_Library_Integration
+public import Store_Protocol
 
 extension Hash {
 
@@ -41,10 +41,10 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
     public typealias Element = Dense.Element
 
     @inlinable
-    public var capacity: Index_Primitives.Index<Dense.Element>.Count { elements.capacity }
+    public var capacity: Index.Index<Dense.Element>.Count { elements.capacity }
 
     @inlinable
-    public subscript(slot: Index_Primitives.Index<Dense.Element>) -> Dense.Element {
+    public subscript(slot: Index.Index<Dense.Element>) -> Dense.Element {
         _read {
             yield elements[slot]
         }
@@ -63,7 +63,7 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
 
     @inlinable
     public mutating func initialize(
-        at slot: Index_Primitives.Index<Dense.Element>,
+        at slot: Index.Index<Dense.Element>,
         to element: consuming Dense.Element
     ) {
         precondition(
@@ -76,8 +76,8 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
     }
 
     @inlinable
-    public mutating func move(at slot: Index_Primitives.Index<Dense.Element>) -> Dense.Element {
-        let last: Index_Primitives.Index<Dense.Element> =
+    public mutating func move(at slot: Index.Index<Dense.Element>) -> Dense.Element {
+        let last: Index.Index<Dense.Element> =
             elements.count.subtract.saturating(.one).map(Ordinal.init)
         precondition(
             slot == last,
@@ -94,5 +94,5 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
 extension __HashIndexed: Buffer.`Protocol` where Dense: ~Copyable {
 
     @inlinable
-    public var count: Index_Primitives.Index<Dense.Element>.Count { elements.count }
+    public var count: Index.Index<Dense.Element>.Count { elements.count }
 }

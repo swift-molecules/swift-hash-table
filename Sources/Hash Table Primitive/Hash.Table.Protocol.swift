@@ -1,5 +1,5 @@
-public import Hash_Primitives
-import Index_Primitives
+public import Hash
+import Index
 
 public protocol __HashTableProtocol: ~Copyable {
 

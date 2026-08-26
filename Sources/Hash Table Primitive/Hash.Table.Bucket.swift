@@ -1,5 +1,5 @@
-public import Hash_Primitives
-public import Index_Primitives
+public import Hash
+public import Index
 
 extension Hash.Table where Element: ~Copyable {
 
@@ -8,7 +8,7 @@ extension Hash.Table where Element: ~Copyable {
 
 extension Hash.Table.Bucket where Element: ~Copyable {
 
-    public typealias Index = Index_Primitives.Index<Self>
+    public typealias Index = Index.Index<Self>
 
     public enum Ops {}
 }

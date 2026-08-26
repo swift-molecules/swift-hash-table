@@ -1,4 +1,4 @@
-public import Hash_Primitives
+public import Hash
 
 extension Hash {
 

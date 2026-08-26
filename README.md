@@ -1,7 +1,7 @@
-# Hash Table Primitives
+# Hash Table
 
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
-[![CI](https://github.com/swift-primitives/swift-hash-table-primitives/actions/workflows/ci.yml/badge.svg)](https://github.com/swift-primitives/swift-hash-table-primitives/actions/workflows/ci.yml)
+[![CI](https://github.com/swift-molecules/swift-hash-table/actions/workflows/ci.yml/badge.svg)](https://github.com/swift-molecules/swift-hash-table/actions/workflows/ci.yml)
 
 `Hash.Table<Element>` — an open-addressed hash table that maps elements to their **typed positions in external storage**, with O(1) average-case lookup. It is the index layer that hashed collections are built on: rather than owning elements, it stores `(hash, position)` pairs where each position is an `Index<Element>` into a separate element array (for example, the backing array of an ordered set). Insertion, lookup, and removal manage those mappings under linear probing.
 
@@ -21,7 +21,7 @@ The element index and the bucket index are distinct phantom types, so a position
 ## Quick Start
 
 ```swift
-import Hash_Table_Primitives
+import Hash_Table
 
 // Index positions into an external element store, O(1) average lookup.
 var table = Hash.Table<String>(minimumCapacity: 16)
@@ -42,7 +42,7 @@ Add the dependency to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-primitives/swift-hash-table-primitives.git", branch: "main")
+    .package(url: "https://github.com/swift-molecules/swift-hash-table.git", branch: "main")
 ]
 ```
 
@@ -52,7 +52,7 @@ Add a product to your target:
 .target(
     name: "App",
     dependencies: [
-        .product(name: "Hash Table Primitives", package: "swift-hash-table-primitives")
+        .product(name: "Hash Table", package: "swift-hash-table")
     ]
 )
 ```
@@ -65,7 +65,7 @@ The package is pre-1.0 — depend on `branch: "main"` until `0.1.0` is tagged. R
 
 | Product | Contents | When to import |
 |---------|----------|----------------|
-| `Hash Table Primitives` | Umbrella — `Hash.Table` and its operation surface | Most consumers |
+| `Hash Table` | Umbrella — `Hash.Table` and its operation surface | Most consumers |
 | `Hash Table Primitive` | `Hash.Table<Element>` — the open-addressed index table | Naming the type directly |
 | `Hash Indexed Primitive` | The dense-storage indexing support type | Advanced / internal composition |
 
@@ -84,9 +84,9 @@ The package is pre-1.0 — depend on `branch: "main"` until `0.1.0` is tagged. R
 
 ## Related Packages
 
-- [`swift-hash-primitives`](https://github.com/swift-primitives/swift-hash-primitives) — the hashing capability elements are keyed by.
-- [`swift-set-primitives`](https://github.com/swift-primitives/swift-set-primitives) / [`swift-dictionary-primitives`](https://github.com/swift-primitives/swift-dictionary-primitives) — the hashed collections built on this index layer.
-- [`swift-index-primitives`](https://github.com/swift-primitives/swift-index-primitives) — `Index<Element>`, the typed position the table maps to.
+- [`swift-hash`](https://github.com/swift-molecules/swift-hash) — the hashing capability elements are keyed by.
+- [`swift-set`](https://github.com/swift-molecules/swift-set) / [`swift-dictionary`](https://github.com/swift-molecules/swift-dictionary) — the hashed collections built on this index layer.
+- [`swift-index`](https://github.com/swift-molecules/swift-index) — `Index<Element>`, the typed position the table maps to.
 
 ---
 

@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-hash-table-primitives",
+    name: "swift-hash-table",
     platforms: [
         .macOS(.v27),
         .iOS(.v27),
@@ -18,8 +18,8 @@ let package = Package(
             targets: ["Hash Table Primitive"]
         ),
         .library(
-            name: "Hash Table Primitives",
-            targets: ["Hash Table Primitives"]
+            name: "Hash Table",
+            targets: ["Hash Table"]
         ),
 
         .library(
@@ -28,73 +28,73 @@ let package = Package(
         ),
 
         .library(
-            name: "Hash Table Primitives Test Support",
-            targets: ["Hash Table Primitives Test Support"]
+            name: "Hash Table Test Support",
+            targets: ["Hash Table Test Support"]
         ),
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-primitives/swift-index-primitives.git",
+            url: "https://github.com/swift-molecules/swift-index.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-hash-primitives.git",
+            url: "https://github.com/swift-molecules/swift-hash.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-property-primitives.git",
+            url: "https://github.com/swift-molecules/swift-property.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-ordinal-primitives.git",
+            url: "https://github.com/swift-molecules/swift-ordinal.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-affine-primitives.git",
+            url: "https://github.com/swift-molecules/swift-affine.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-cardinal-primitives.git",
+            url: "https://github.com/swift-molecules/swift-cardinal.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-cyclic-index-primitives.git",
+            url: "https://github.com/swift-molecules/swift-cyclic-index.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-finite-primitives.git",
+            url: "https://github.com/swift-molecules/swift-finite.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-buffer-primitives.git",
+            url: "https://github.com/swift-molecules/swift-buffer.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-buffer-slots-primitives.git",
+            url: "https://github.com/swift-molecules/swift-buffer-slots.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-buffer-linear-primitives.git",
+            url: "https://github.com/swift-molecules/swift-buffer-linear.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-storage-primitives.git",
+            url: "https://github.com/swift-molecules/swift-storage.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-storage-split-primitives.git",
+            url: "https://github.com/swift-molecules/swift-storage-split.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-memory-heap-primitives.git",
+            url: "https://github.com/swift-molecules/swift-memory-heap.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-memory-allocation-primitives.git",
+            url: "https://github.com/swift-molecules/swift-memory-allocation.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-tagged-primitives.git",
+            url: "https://github.com/swift-molecules/swift-tagged.git",
             branch: "main"
         ),
     ],
@@ -103,39 +103,39 @@ let package = Package(
         .target(
             name: "Hash Table Primitive",
             dependencies: [
-                .product(name: "Index Primitives", package: "swift-index-primitives"),
-                .product(name: "Hash Primitives", package: "swift-hash-primitives"),
-                .product(name: "Property Primitives", package: "swift-property-primitives"),
-                .product(name: "Ordinal Primitives", package: "swift-ordinal-primitives"),
+                .product(name: "Index", package: "swift-index"),
+                .product(name: "Hash", package: "swift-hash"),
+                .product(name: "Property", package: "swift-property"),
+                .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(
-                    name: "Ordinal Primitives Standard Library Integration",
-                    package: "swift-ordinal-primitives"
+                    name: "Ordinal Standard Library Integration",
+                    package: "swift-ordinal"
                 ),
                 .product(
-                    name: "Affine Primitives Standard Library Integration",
-                    package: "swift-affine-primitives"
+                    name: "Affine Standard Library Integration",
+                    package: "swift-affine"
                 ),
-                .product(name: "Cardinal Primitives", package: "swift-cardinal-primitives"),
-                .product(name: "Cyclic Index Primitives", package: "swift-cyclic-index-primitives"),
-                .product(name: "Finite Primitives", package: "swift-finite-primitives"),
-                .product(name: "Buffer Primitive", package: "swift-buffer-primitives"),
-                .product(name: "Buffer Slots Primitive", package: "swift-buffer-slots-primitives"),
-                .product(name: "Buffer Slots Primitives", package: "swift-buffer-slots-primitives"),
+                .product(name: "Cardinal", package: "swift-cardinal"),
+                .product(name: "Cyclic Index", package: "swift-cyclic-index"),
+                .product(name: "Finite", package: "swift-finite"),
+                .product(name: "Buffer Primitive", package: "swift-buffer"),
+                .product(name: "Buffer Slots Primitive", package: "swift-buffer-slots"),
+                .product(name: "Buffer Slots", package: "swift-buffer-slots"),
                 .product(
                     name: "Buffer Linear Primitive",
-                    package: "swift-buffer-linear-primitives"
+                    package: "swift-buffer-linear"
                 ),
-                .product(name: "Storage Primitive", package: "swift-storage-primitives"),
+                .product(name: "Storage Primitive", package: "swift-storage"),
                 .product(
-                    name: "Storage Contiguous Primitives",
-                    package: "swift-storage-primitives"
+                    name: "Storage Contiguous",
+                    package: "swift-storage"
                 ),
-                .product(name: "Store Primitive", package: "swift-storage-primitives"),
-                .product(name: "Store Split Primitives", package: "swift-storage-split-primitives"),
-                .product(name: "Memory Heap Primitives", package: "swift-memory-heap-primitives"),
+                .product(name: "Store Primitive", package: "swift-storage"),
+                .product(name: "Store Split", package: "swift-storage-split"),
+                .product(name: "Memory Heap", package: "swift-memory-heap"),
                 .product(
                     name: "Memory Allocator Primitive",
-                    package: "swift-memory-allocation-primitives"
+                    package: "swift-memory-allocation"
                 ),
             ]
         ),
@@ -144,42 +144,42 @@ let package = Package(
             name: "Hash Indexed Primitive",
             dependencies: [
                 "Hash Table Primitive",
-                .product(name: "Hash Primitives", package: "swift-hash-primitives"),
-                .product(name: "Store Protocol Primitives", package: "swift-storage-primitives"),
-                .product(name: "Buffer Protocol Primitives", package: "swift-buffer-primitives"),
-                .product(name: "Buffer Primitive", package: "swift-buffer-primitives"),
+                .product(name: "Hash", package: "swift-hash"),
+                .product(name: "Store Protocol", package: "swift-storage"),
+                .product(name: "Buffer Protocol", package: "swift-buffer"),
+                .product(name: "Buffer Primitive", package: "swift-buffer"),
                 .product(
                     name: "Buffer Linear Primitive",
-                    package: "swift-buffer-linear-primitives"
+                    package: "swift-buffer-linear"
                 ),
                 .product(
-                    name: "Buffer Linear Primitives",
-                    package: "swift-buffer-linear-primitives"
+                    name: "Buffer Linear",
+                    package: "swift-buffer-linear"
                 ),
-                .product(name: "Storage Primitive", package: "swift-storage-primitives"),
+                .product(name: "Storage Primitive", package: "swift-storage"),
                 .product(
-                    name: "Storage Contiguous Primitives",
-                    package: "swift-storage-primitives"
+                    name: "Storage Contiguous",
+                    package: "swift-storage"
                 ),
-                .product(name: "Memory Heap Primitives", package: "swift-memory-heap-primitives"),
+                .product(name: "Memory Heap", package: "swift-memory-heap"),
                 .product(
                     name: "Memory Allocator Primitive",
-                    package: "swift-memory-allocation-primitives"
+                    package: "swift-memory-allocation"
                 ),
-                .product(name: "Index Primitives", package: "swift-index-primitives"),
+                .product(name: "Index", package: "swift-index"),
                 .product(
-                    name: "Ordinal Primitives Standard Library Integration",
-                    package: "swift-ordinal-primitives"
+                    name: "Ordinal Standard Library Integration",
+                    package: "swift-ordinal"
                 ),
                 .product(
-                    name: "Affine Primitives Standard Library Integration",
-                    package: "swift-affine-primitives"
+                    name: "Affine Standard Library Integration",
+                    package: "swift-affine"
                 ),
             ]
         ),
 
         .target(
-            name: "Hash Table Primitives",
+            name: "Hash Table",
             dependencies: [
                 "Hash Table Primitive",
                 "Hash Indexed Primitive",
@@ -187,10 +187,10 @@ let package = Package(
         ),
 
         .target(
-            name: "Hash Table Primitives Test Support",
+            name: "Hash Table Test Support",
             dependencies: [
-                "Hash Table Primitives",
-                .product(name: "Index Primitives", package: "swift-index-primitives"),
+                "Hash Table",
+                .product(name: "Index", package: "swift-index"),
             ],
             path: "Tests/Support"
         ),
@@ -198,23 +198,23 @@ let package = Package(
         .testTarget(
             name: "Hash Table Primitive Tests",
             dependencies: [
-                "Hash Table Primitives",
-                "Hash Table Primitives Test Support",
+                "Hash Table",
+                "Hash Table Test Support",
                 .product(
-                    name: "Buffer Primitives Test Support",
-                    package: "swift-buffer-primitives"
+                    name: "Buffer Test Support",
+                    package: "swift-buffer"
                 ),
                 .product(
-                    name: "Hash Primitives Standard Library Integration",
-                    package: "swift-hash-primitives"
+                    name: "Hash Standard Library Integration",
+                    package: "swift-hash"
                 ),
                 .product(
-                    name: "Tagged Primitives Standard Library Integration",
-                    package: "swift-tagged-primitives"
+                    name: "Tagged Standard Library Integration",
+                    package: "swift-tagged"
                 ),
                 .product(
-                    name: "Ordinal Primitives Standard Library Integration",
-                    package: "swift-ordinal-primitives"
+                    name: "Ordinal Standard Library Integration",
+                    package: "swift-ordinal"
                 ),
             ]
         ),

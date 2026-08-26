@@ -1,19 +1,19 @@
-import Affine_Primitives_Standard_Library_Integration
+import Affine_Standard_Library_Integration
 public import Buffer_Linear_Primitive
 public import Buffer_Primitive
 public import Buffer_Slots_Primitive
-import Buffer_Slots_Primitives
-import Cardinal_Primitives
-import Hash_Primitives
-public import Index_Primitives
+import Buffer_Slots
+import Cardinal
+import Hash
+public import Index
 public import Memory_Allocator_Primitive
-public import Memory_Heap_Primitives
-internal import Ordinal_Primitives
-import Ordinal_Primitives_Standard_Library_Integration
-public import Storage_Contiguous_Primitives
+public import Memory_Heap
+internal import Ordinal
+import Ordinal_Standard_Library_Integration
+public import Storage_Contiguous
 public import Storage_Primitive
 public import Store_Primitive
-public import Store_Split_Primitives
+public import Store_Split
 
 extension Hash.Table where Element: ~Copyable {
 

@@ -1,8 +1,8 @@
-public import Cyclic_Index_Primitives
-import Hash_Primitives
-public import Index_Primitives
-import Ordinal_Primitives
-internal import Property_Primitives
+public import Cyclic_Index
+import Hash
+public import Index
+import Ordinal
+internal import Property
 
 extension Hash.Table.Bucket.Ops where Element: ~Copyable {
 

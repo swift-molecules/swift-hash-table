@@ -1,6 +1,6 @@
-import Affine_Primitives_Standard_Library_Integration
-public import Hash_Primitives
-public import Index_Primitives
+import Affine_Standard_Library_Integration
+public import Hash
+public import Index
 
 extension Hash.Table where Element: ~Copyable {
 

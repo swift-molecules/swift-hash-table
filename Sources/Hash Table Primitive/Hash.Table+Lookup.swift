@@ -1,8 +1,8 @@
-import Affine_Primitives_Standard_Library_Integration
+import Affine_Standard_Library_Integration
 public import Buffer_Slots_Primitive
-import Hash_Primitives
-public import Index_Primitives
-import Ordinal_Primitives_Standard_Library_Integration
+import Hash
+public import Index
+import Ordinal_Standard_Library_Integration
 
 extension Hash.Table where Element: ~Copyable {
 

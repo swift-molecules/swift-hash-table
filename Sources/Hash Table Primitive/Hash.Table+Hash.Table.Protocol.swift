@@ -1,5 +1,5 @@
-public import Hash_Primitives
-public import Index_Primitives
+public import Hash
+public import Index
 
 extension Hash.Table: __HashTableProtocol where Element: ~Copyable {
 

@@ -1,13 +1,13 @@
 public import Buffer_Linear_Primitive
 public import Buffer_Primitive
 public import Hash_Indexed_Primitive
-import Hash_Primitives
+import Hash
 import Hash_Table_Primitive
-import Index_Primitives
+import Index
 public import Memory_Allocator_Primitive
-public import Memory_Heap_Primitives
-import Ordinal_Primitives_Standard_Library_Integration
-public import Storage_Contiguous_Primitives
+public import Memory_Heap
+import Ordinal_Standard_Library_Integration
+public import Storage_Contiguous
 public import Storage_Primitive
 
 extension Hash {
