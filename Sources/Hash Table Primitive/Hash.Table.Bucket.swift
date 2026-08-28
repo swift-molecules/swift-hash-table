@@ -1,5 +1,5 @@
 public import Hash
-public import Index
+public import struct Index.Index
 
 extension Hash.Table where Element: ~Copyable {
 
@@ -8,7 +8,7 @@ extension Hash.Table where Element: ~Copyable {
 
 extension Hash.Table.Bucket where Element: ~Copyable {
 
-    public typealias Index = Index.Index<Self>
+    public typealias Position = Index<Self>
 
     public enum Ops {}
 }

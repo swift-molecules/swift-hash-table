@@ -1,19 +1,19 @@
 import Affine_Standard_Library_Integration
 public import Buffer_Linear_Primitive
-public import Buffer_Primitive
-public import Buffer_Slots_Primitive
-import Buffer_Slots
-import Cardinal
-import Hash
+public import Buffer
+public import Buffer_Slots
+public import Cardinal
+public import Hash
 public import Index
+public import Memory
 public import Memory_Allocator_Primitive
-public import Memory_Heap
-internal import Ordinal
+public import Memory_Small
+public import Ordinal
 import Ordinal_Standard_Library_Integration
-public import Storage_Contiguous
-public import Storage_Primitive
-public import Store_Primitive
+public import Storage
+public import Storage_Memory
 public import Store_Split
+public import Tagged
 
 extension Hash.Table where Element: ~Copyable {
 
@@ -22,8 +22,8 @@ extension Hash.Table where Element: ~Copyable {
         var copy = Self(minimumCapacity: .zero)
         var fresh = Buffer<
             Store.Split<
-                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
-                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>,
+                Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>
             >
         >.Slots(
             capacity: self.bucketCapacity.retag(Int.self),
@@ -32,7 +32,7 @@ extension Hash.Table where Element: ~Copyable {
         fresh.fill(payload: 0)
         var freshPlane = Self.makeRankPlane(bucketCapacity: self.bucketCapacity)
         var bucket: Index<Int> = .zero
-        let end = self.bucketCapacity.retag(Int.self).map(Ordinal.init)
+        let end = self.bucketCapacity.retag(Int.self).map { Ordinal($0.rawValue) }
         while bucket < end {
             fresh[metadata: bucket] = _buffer[metadata: bucket]
             fresh[payload: bucket] = _buffer[payload: bucket]

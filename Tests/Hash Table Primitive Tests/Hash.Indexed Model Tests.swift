@@ -1,22 +1,25 @@
 import Buffer_Linear_Primitive
-import Buffer_Primitive
-public import Buffer_Test_Support
+import Buffer
+import Cardinal
 public import Hash
 import Hash_Table
-import Hash_Table_Test_Support
+public import Hash_Table_Test_Support
 import Index
+import Memory
 import Memory_Allocator_Primitive
-import Memory_Heap
+import Memory_Small
+import Ordinal
 import Ordinal_Standard_Library_Integration
-import Storage_Contiguous
-import Storage_Primitive
+import Storage
+import Storage_Memory
+import Tagged
 import Tagged_Standard_Library_Integration
 import Testing
 
-private typealias HeapStorage<E: ~Copyable> =
-    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<E>
+private typealias DenseStorage<E: ~Copyable> =
+    Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>
 
-private typealias DenseColumn<E: ~Copyable> = Buffer<HeapStorage<E>>.Linear
+private typealias DenseColumn<E: ~Copyable> = Buffer<DenseStorage<E>>.Linear
 private typealias OrderedColumn<E: Hash.Key & ~Copyable> = Hash.Indexed<DenseColumn<E>>
 
 private func typedHash<T: Hash.`Protocol` & ~Copyable>(_ value: borrowing T) -> Hash.Value {
@@ -92,12 +95,12 @@ private func audit(_ column: borrowing OrderedColumn<Key>, against model: Refere
     var findings: [String] = []
 
     let count = column.count
-    if count != Index<Key>.Count(UInt(model.members.count)) {
+    if count != Tagged<Key, Cardinal>(UInt(model.members.count)) {
         findings.append("count: column \(count), model \(model.members.count)")
     }
 
     for (offset, member) in model.members.enumerated() {
-        let slot = Index<Key>(Ordinal(UInt(offset)))
+        let slot = Index<Key>(_unchecked: Ordinal(UInt(offset)))
         let resident = column[slot]
         if resident.id != member.id {
             findings.append("slot \(offset): column holds id \(resident.id), model id \(member.id)")
@@ -130,7 +133,9 @@ private struct OrderedStream: ~Copyable {
 
     init(seed: UInt64, collisionDivisor: Int) {
         var rng = Model.Random(seed: seed)
-        self.column = OrderedColumn<Key>(minimumCapacity: Index<Key>.Count(UInt(rng.below(17))))
+        self.column = OrderedColumn<Key>(
+            minimumCapacity: Tagged<Key, Cardinal>(UInt(rng.below(17)))
+        )
         self.rng = rng
         self.verdict = Model.Verdict(seed: seed)
         self.collisionDivisor = collisionDivisor
@@ -209,7 +214,7 @@ extension OrderedStream {
         let pick = model.members[index]
         verdict.record("pos id=\(pick.id) @\(index)")
         let position = column.position(of: pick)
-        if position != Index<Key>(Ordinal(UInt(index))) {
+        if position != Index<Key>(_unchecked: Ordinal(UInt(index))) {
             verdict.diverged([
                 "position(of: id \(pick.id)): \(String(describing: position)), model \(index)"
             ])
@@ -221,7 +226,7 @@ extension OrderedStream {
         let old = model.members[index]
         let new = freshKey()
         verdict.record("mutate@\(index) \(old.id)→\(new.id) g\(old.group)→g\(new.group)")
-        column[Index<Key>(Ordinal(UInt(index)))] = new
+        column[Index<Key>(_unchecked: Ordinal(UInt(index)))] = new
         model.replace(at: index, with: new)
     }
 
@@ -231,7 +236,7 @@ extension OrderedStream {
         let new = Key(id: nextID, group: old.group)
         nextID += 1
         verdict.record("mutate=@\(index) \(old.id)→\(new.id) g\(old.group)")
-        column[Index<Key>(Ordinal(UInt(index)))] = new
+        column[Index<Key>(_unchecked: Ordinal(UInt(index)))] = new
         model.replace(at: index, with: new)
     }
 
@@ -251,7 +256,7 @@ extension OrderedStream {
     mutating func cloneCheck() {
         verdict.record("clone")
         var copy = column.clone()
-        if copy.count != Index<Key>.Count(UInt(model.members.count)) {
+        if copy.count != Tagged<Key, Cardinal>(UInt(model.members.count)) {
             verdict.diverged(["clone count \(copy.count), model \(model.members.count)"])
         }
         if !model.members.isEmpty {
@@ -329,7 +334,9 @@ private struct EngineStream: ~Copyable {
 
     init(seed: UInt64) {
         var rng = Model.Random(seed: seed)
-        self.table = Hash.Table<Key>(minimumCapacity: Index<Key>.Count(UInt(rng.below(17))))
+        self.table = Hash.Table<Key>(
+            minimumCapacity: Tagged<Key, Cardinal>(UInt(rng.below(17)))
+        )
         self.rng = rng
         self.verdict = Model.Verdict(seed: seed)
     }
@@ -337,7 +344,7 @@ private struct EngineStream: ~Copyable {
 
 extension EngineStream {
     func positionIndex(_ position: Int) -> Index<Key> {
-        Index<Key>(Ordinal(UInt(position)))
+        Index<Key>(_unchecked: Ordinal(UInt(position)))
     }
 
     mutating func freshKey() -> Key {
@@ -480,7 +487,7 @@ extension EngineStream {
     func audit() -> [String] {
         var findings: [String] = []
         let count = table.count
-        if count != Index<Key>.Count(UInt(liveIDs.count)) {
+        if count != Tagged<Key, Cardinal>(UInt(liveIDs.count)) {
             findings.append("engine count \(count), model \(liveIDs.count)")
         }
         for id in liveIDs {
@@ -505,12 +512,13 @@ extension EngineStream {
                 )
             }
         }
-        var bucket: Hash.Table<Key>.Bucket.Index = .zero
-        let end = table.capacity.map(Ordinal.init)
+        var bucketRaw: UInt = 0
+        let end = table.capacity.underlying.rawValue
         var liveBuckets = 0
-        while bucket < end {
+        while bucketRaw < end {
+            let bucket = Hash.Table<Key>.Bucket.Position(_unchecked: Ordinal(bucketRaw))
             if table[hash: bucket] != Hash.Table<Key>.empty { liveBuckets += 1 }
-            bucket = bucket.successor.saturating()
+            bucketRaw &+= 1
         }
         if liveBuckets != liveIDs.count {
             findings.append(
@@ -558,7 +566,7 @@ private func runEngineStream(seed: UInt64) -> Model.Verdict {
     return stream.finish()
 }
 
-extension Model.Element.Tracked: @retroactive Hash.`Protocol` {
+extension Model.Element.Tracked: Hash.`Protocol` {
 
     public borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(group)
@@ -584,7 +592,7 @@ private struct TrackedStream: ~Copyable {
     init(seed: UInt64, census: Model.Census) {
         var rng = Model.Random(seed: seed)
         self.column = OrderedColumn<Model.Element.Tracked>(
-            minimumCapacity: Index<Model.Element.Tracked>.Count(UInt(rng.below(9)))
+            minimumCapacity: Tagged<Model.Element.Tracked, Cardinal>(UInt(rng.below(9)))
         )
         self.rng = rng
         self.verdict = Model.Verdict(seed: seed)
@@ -668,7 +676,7 @@ extension TrackedStream {
         let pick = members[index]
         verdict.record("pos id=\(pick.id) @\(index)")
         let position = column.position(of: probe(pick))
-        if position != Index<Model.Element.Tracked>(Ordinal(UInt(index))) {
+        if position != Index<Model.Element.Tracked>(_unchecked: Ordinal(UInt(index))) {
             verdict.diverged([
                 "position(of: id \(pick.id)): \(String(describing: position)), model \(index)"
             ])
@@ -680,7 +688,7 @@ extension TrackedStream {
         let old = members[index]
         let minted = freshID()
         verdict.record("mutate@\(index) \(old.id)→\(minted.id) g\(old.group)→g\(minted.group)")
-        column[Index<Model.Element.Tracked>(Ordinal(UInt(index)))] = probe(minted)
+        column[Index<Model.Element.Tracked>(_unchecked: Ordinal(UInt(index)))] = probe(minted)
         members[index] = minted
     }
 
@@ -707,11 +715,11 @@ extension TrackedStream {
     func audit() -> [String] {
         var findings: [String] = []
         let count = column.count
-        if count != Index<Model.Element.Tracked>.Count(UInt(members.count)) {
+        if count != Tagged<Model.Element.Tracked, Cardinal>(UInt(members.count)) {
             findings.append("count: column \(count), model \(members.count)")
         }
         for (offset, member) in members.enumerated() {
-            let slot = Index<Model.Element.Tracked>(Ordinal(UInt(offset)))
+            let slot = Index<Model.Element.Tracked>(_unchecked: Ordinal(UInt(offset)))
             let resident = column[slot].id
             if resident != member.id {
                 findings.append(
@@ -814,8 +822,8 @@ extension `Hash.Indexed Model`.Integration {
 extension `Hash.Indexed Model`.Unit {
     @Test
     func `two instances, same ops: the lawful surface is seed-independent`() {
-        var first = OrderedColumn<Key>(minimumCapacity: Index<Key>.Count(8))
-        var second = OrderedColumn<Key>(minimumCapacity: Index<Key>.Count(8))
+        var first = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(8))
+        var second = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(8))
         var members: [Key] = []
 
         for id in 0..<48 {
@@ -832,9 +840,9 @@ extension `Hash.Indexed Model`.Unit {
 
         let counts = (first.count, second.count)
         #expect(counts.0 == counts.1)
-        #expect(counts.0 == Index<Key>.Count(UInt(members.count)))
+        #expect(counts.0 == Tagged<Key, Cardinal>(UInt(members.count)))
         for (offset, member) in members.enumerated() {
-            let slot = Index<Key>(Ordinal(UInt(offset)))
+            let slot = Index<Key>(_unchecked: Ordinal(UInt(offset)))
             let residentFirst = first[slot].id
             let residentSecond = second[slot].id
             #expect(residentFirst == member.id)
@@ -857,10 +865,10 @@ extension `Hash.Indexed Model`.Unit {
             column.insert(Key(id: id, collisionDivisor: 5))
         }
         let count = column.count
-        #expect(count == Index<Key>.Count(200))
+        #expect(count == Tagged<Key, Cardinal>(200))
         for id in 0..<200 {
             let position = column.position(of: Key(id: id, collisionDivisor: 5))
-            #expect(position == Index<Key>(Ordinal(UInt(id))))
+            #expect(position == Index<Key>(_unchecked: Ordinal(UInt(id))))
         }
         var seen: [Int] = []
         column.forEach { seen.append($0.id) }
@@ -873,7 +881,7 @@ extension `Hash.Indexed Model`.Unit {
 extension `Hash.Indexed Model`.`Edge Case` {
     @Test
     func `empty column: misses, absent removals, wipes, coherence`() {
-        var column = OrderedColumn<Key>(minimumCapacity: Index<Key>.Count(4))
+        var column = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(4))
         let absent = Key(id: 7, group: 1)
         let contained = column.contains(absent)
         #expect(!contained)
@@ -884,7 +892,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
         column.removeAll(keepingCapacity: true)
         column.removeAll(keepingCapacity: false)
         let count = column.count
-        #expect(count == Index<Key>.Count(0))
+        #expect(count == Tagged<Key, Cardinal>(0))
         let coherent = Hash.Coherence.violations(column)
         #expect(coherent.isEmpty, "\(coherent)")
         column.insert(absent)
@@ -897,7 +905,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
         let census = Model.Census()
         do {
             var column = OrderedColumn<Model.Element.Tracked>(
-                minimumCapacity: Index<Model.Element.Tracked>.Count(4)
+                minimumCapacity: Tagged<Model.Element.Tracked, Cardinal>(4)
             )
 
             column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))
@@ -923,9 +931,9 @@ extension `Hash.Indexed Model`.`Edge Case` {
 
     @Test
     func `single-element column: both mutate branches stay coherent`() {
-        var column = OrderedColumn<Key>(minimumCapacity: Index<Key>.Count(2))
+        var column = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(2))
         column.insert(Key(id: 10, group: 3))
-        let slot = Index<Key>(Ordinal(UInt(0)))
+        let slot = Index<Key>(_unchecked: Ordinal(UInt(0)))
 
         column[slot] = Key(id: 11, group: 3)
         let oldGone = column.contains(Key(id: 10, group: 3))

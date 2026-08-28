@@ -1,6 +1,11 @@
+public import Cardinal
 public import Hash
 public import Index
-internal import Property
+public import Ordinal
+public import Ownership
+public import Property
+public import Property_Ownership
+public import Tagged
 
 extension Hash.Table.ForEach where Element: ~Copyable {
 
@@ -23,16 +28,17 @@ extension Property.Inout.Typed
 where Tag == Hash.Table<Element>.ForEach, Base == Hash.Table<Element>, Element: ~Copyable {
 
     @inlinable
-    public func occupied(_ body: (Hash.Table<Element>.Bucket.Index, Index<Element>) -> Void) {
-        var bucket: Hash.Table<Element>.Bucket.Index = .zero
+    public func occupied(_ body: (Hash.Table<Element>.Bucket.Position, Index<Element>) -> Void) {
         let cap = base.value.bucketCapacity
-        while bucket < cap {
+        var raw: UInt = 0
+        while raw < cap.underlying.rawValue {
+            let bucket = Hash.Table<Element>.Bucket.Position(_unchecked: Ordinal(raw))
             let hash = base.value[hash: bucket]
             if hash != Hash.Table<Element>.empty {
                 let position = base.value[position: bucket]
                 body(bucket, position)
             }
-            bucket += .one
+            raw &+= 1
         }
     }
 }

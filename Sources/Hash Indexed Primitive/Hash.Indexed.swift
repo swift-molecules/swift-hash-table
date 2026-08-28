@@ -1,9 +1,10 @@
-public import Buffer_Protocol
+public import Cardinal
 public import Hash
 public import Hash_Table_Primitive
-public import Index
-import Ordinal_Standard_Library_Integration
-public import Store_Protocol
+public import struct Index.Index
+public import Ordinal
+public import Storage
+public import Tagged
 
 extension Hash {
 
@@ -12,7 +13,7 @@ extension Hash {
 
 @_documentation(visibility: public)
 @frozen
-public struct __HashIndexed<Dense: Store.`Protocol` & Buffer.`Protocol` & ~Copyable>: ~Copyable
+public struct __HashIndexed<Dense: Store.`Protocol` & ~Copyable>: ~Copyable
 where Dense.Element: Hash.Key {
 
     @usableFromInline
@@ -41,10 +42,10 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
     public typealias Element = Dense.Element
 
     @inlinable
-    public var capacity: Index.Index<Dense.Element>.Count { elements.capacity }
+    public var capacity: Tagged<Dense.Element, Cardinal> { elements.capacity }
 
     @inlinable
-    public subscript(slot: Index.Index<Dense.Element>) -> Dense.Element {
+    public subscript(slot: Index<Dense.Element>) -> Dense.Element {
         _read {
             yield elements[slot]
         }
@@ -54,7 +55,7 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
             let newHash = elements[slot].hashValue
             if oldHash != newHash {
                 indices.remove(hashValue: oldHash, context: slot) { position, mutated in
-                    position == mutated
+                    position.underlying.rawValue == mutated.underlying.rawValue
                 }
                 indices.insert(_unchecked: (), position: slot, hashValue: newHash)
             }
@@ -63,11 +64,11 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
 
     @inlinable
     public mutating func initialize(
-        at slot: Index.Index<Dense.Element>,
+        at slot: Index<Dense.Element>,
         to element: consuming Dense.Element
     ) {
         precondition(
-            slot == elements.count.map(Ordinal.init),
+            slot.underlying.rawValue == indices.count.underlying.rawValue,
             "indexed seam: initialize is lawful only at the back (slot == count)"
         )
         let hashValue = element.hashValue
@@ -76,23 +77,52 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
     }
 
     @inlinable
-    public mutating func move(at slot: Index.Index<Dense.Element>) -> Dense.Element {
-        let last: Index.Index<Dense.Element> =
-            elements.count.subtract.saturating(.one).map(Ordinal.init)
+    public mutating func move(at slot: Index<Dense.Element>) -> Dense.Element {
+        let last = Index<Dense.Element>(
+            _unchecked: Ordinal(indices.count.underlying.rawValue &- 1)
+        )
         precondition(
-            slot == last,
+            slot.underlying.rawValue == last.underlying.rawValue,
             "indexed seam: move is lawful only at the back (slot == count − 1)"
         )
         let element = elements.move(at: slot)
         indices.remove(hashValue: element.hashValue, context: slot) { position, removed in
-            position == removed
+            position.underlying.rawValue == removed.underlying.rawValue
         }
         return element
     }
 }
 
-extension __HashIndexed: Buffer.`Protocol` where Dense: ~Copyable {
+extension __HashIndexed where Dense: ~Copyable {
 
     @inlinable
-    public var count: Index.Index<Dense.Element>.Count { elements.count }
+    public var count: Tagged<Dense.Element, Cardinal> { indices.count }
+
+    @inlinable
+    public var isEmpty: Bool { indices.isEmpty }
+
+    @inlinable
+    public func position(of element: borrowing Dense.Element) -> Index<Dense.Element>? {
+        indices.position(forHash: element.hashValue, context: element) { position, candidate in
+            elements[position] == candidate
+        }
+    }
+
+    @inlinable
+    public func contains(_ element: borrowing Dense.Element) -> Bool {
+        if case .some = position(of: element) {
+            return true
+        }
+        return false
+    }
+
+    @inlinable
+    public mutating func removeAll() {
+        var remaining = indices.count.underlying.rawValue
+        while remaining > 0 {
+            remaining &-= 1
+            _ = elements.move(at: Index<Dense.Element>(_unchecked: Ordinal(remaining)))
+        }
+        indices.remove.all(keepingCapacity: true)
+    }
 }

@@ -1,8 +1,11 @@
 public import Cyclic_Index
-import Hash
-public import Index
-import Ordinal
-internal import Property
+public import Cardinal
+public import Hash
+public import Ordinal
+public import Ownership
+public import Property
+public import Property_Ownership
+public import Tagged
 
 extension Hash.Table.Bucket.Ops where Element: ~Copyable {
 
@@ -16,9 +19,13 @@ extension Hash.Table where Element: ~Copyable {
     package static func bucket(
         for hash: Int,
         seed: Int,
-        capacity: Index<Bucket>.Count
-    ) -> Bucket.Index {
-        Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: hash ^ seed)) % capacity.underlying)
+        capacity: Tagged<Bucket, Cardinal>
+    ) -> Bucket.Position {
+        Bucket.Position(
+            _unchecked: Ordinal(
+                UInt(bitPattern: hash ^ seed) % capacity.underlying.rawValue
+            )
+        )
     }
 
     @inlinable
@@ -33,15 +40,15 @@ extension Property.Inout.Typed
 where Tag == Hash.Table<Element>.Bucket.Ops, Base == Hash.Table<Element>, Element: ~Copyable {
 
     @inlinable
-    public func `for`(hash: Int) -> Hash.Table<Element>.Bucket.Index {
+    public func `for`(hash: Int) -> Hash.Table<Element>.Bucket.Position {
         let capacity = base.value.bucketCapacity
         return Hash.Table<Element>.bucket(for: hash, seed: base.value._seed, capacity: capacity)
     }
 
     @inlinable
-    public func next(_ bucket: Hash.Table<Element>.Bucket.Index) -> Hash.Table<Element>.Bucket.Index
+    public func next(_ bucket: Hash.Table<Element>.Bucket.Position) -> Hash.Table<Element>.Bucket.Position
     {
         let capacity = base.value.bucketCapacity
-        return Hash.Table<Element>.Bucket.Index.Modular.successor(of: bucket, capacity: capacity)
+        return Hash.Table<Element>.Bucket.Position.Modular.successor(of: bucket, capacity: capacity)
     }
 }

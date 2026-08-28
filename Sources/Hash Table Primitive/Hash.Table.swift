@@ -1,19 +1,16 @@
-public import Affine_Standard_Library_Integration
+import Affine_Standard_Library_Integration
 public import Buffer_Linear_Primitive
-public import Buffer_Primitive
-public import Buffer_Slots_Primitive
-import Cardinal
-internal import Cyclic_Index
-internal import Finite
-import Hash
-public import Index
+public import Buffer
+public import Buffer_Slots
+public import Cardinal
+public import Hash
+public import Memory
 public import Memory_Allocator_Primitive
-public import Memory_Heap
-internal import Ordinal
-public import Storage_Contiguous
-public import Storage_Primitive
-public import Store_Primitive
+public import Memory_Small
+public import Storage
+public import Storage_Memory
 public import Store_Split
+public import Tagged
 
 extension Hash {
 
@@ -22,7 +19,7 @@ extension Hash {
     public struct Table<Element: ~Copyable>: ~Copyable {
 
         @usableFromInline
-        package var _count: Index<Element>.Count
+        package var _count: Tagged<Element, Cardinal>
 
         @usableFromInline
         package var _seed: Int
@@ -31,27 +28,27 @@ extension Hash {
         package var _buffer:
             Buffer<
                 Store.Split<
-                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
-                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                    Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>,
+                    Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>
                 >
             >.Slots
 
         @usableFromInline
         package var _rankToBucket:
-            Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>.Linear
+            Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear
 
         @inlinable
         package static var empty: Int { 0 }
 
         @inlinable
-        public init(minimumCapacity: Index<Element>.Count = .zero) {
+        public init(minimumCapacity: Tagged<Element, Cardinal> = .zero) {
             let hashCapacity = Self.bucketCapacity(for: minimumCapacity)
             _count = .zero
             _seed = Self.makeSeed()
             var buffer = Buffer<
                 Store.Split<
-                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
-                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                    Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>,
+                    Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>
                 >
             >.Slots(
                 capacity: hashCapacity.retag(Int.self),
@@ -64,9 +61,9 @@ extension Hash {
 
         @inlinable
         package static func makeRankPlane(
-            bucketCapacity: Index<Bucket>.Count
-        ) -> Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>.Linear {
-            var plane = Buffer<Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>>.Linear(
+            bucketCapacity: Tagged<Bucket, Cardinal>
+        ) -> Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear {
+            var plane = Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear(
                 minimumCapacity: bucketCapacity.retag(Int.self)
             )
 
@@ -81,17 +78,17 @@ extension Hash {
 
         @inlinable
         package static func bucketCapacity(
-            for minimumCapacity: Index<Element>.Count
-        ) -> Index<Bucket>.Count {
-            let minCap = Int(bitPattern: minimumCapacity)
+            for minimumCapacity: Tagged<Element, Cardinal>
+        ) -> Tagged<Bucket, Cardinal> {
+            let minCap = Int(bitPattern: minimumCapacity.underlying.rawValue)
             guard minCap > 0 else {
-                return Index<Bucket>.Count(Cardinal(8))
+                return Tagged<Bucket, Cardinal>(8)
             }
 
             let needed = max(8, (minCap * 10) / 7)
 
             let powerOfTwo = 1 << (Int.bitWidth - (needed - 1).leadingZeroBitCount)
-            return Index<Bucket>.Count(Cardinal(UInt(powerOfTwo)))
+            return Tagged<Bucket, Cardinal>(UInt(powerOfTwo))
         }
 
         @inlinable

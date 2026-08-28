@@ -1,8 +1,9 @@
-import Affine_Standard_Library_Integration
-public import Buffer_Slots_Primitive
-import Hash
+public import Buffer_Slots
+public import Cardinal
+public import Hash
 public import Index
-import Ordinal_Standard_Library_Integration
+public import Ordinal
+public import Tagged
 
 extension Hash.Table where Element: ~Copyable {
 
@@ -14,9 +15,12 @@ extension Hash.Table where Element: ~Copyable {
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
-        let capacity = Int(bitPattern: capacityCount)
+        let capacity = Int(bitPattern: capacityCount.underlying.rawValue)
         let mask = capacity &- 1
-        var bucket = Int(bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount))
+        var bucket = Int(
+            bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount).underlying
+                .rawValue
+        )
         var probes = 0
 
         return unsafe _buffer.withMetadataPointer {
@@ -31,7 +35,7 @@ extension Hash.Table where Element: ~Copyable {
 
                 if storedHash == hash {
                     let position = self[
-                        position: Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))
+                        position: Bucket.Position(_unchecked: Ordinal(UInt(bitPattern: bucket)))
                     ]
                     if equals(position) {
                         return position
@@ -55,9 +59,12 @@ extension Hash.Table where Element: ~Copyable {
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
-        let capacity = Int(bitPattern: capacityCount)
+        let capacity = Int(bitPattern: capacityCount.underlying.rawValue)
         let mask = capacity &- 1
-        var bucket = Int(bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount))
+        var bucket = Int(
+            bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount).underlying
+                .rawValue
+        )
         var probes = 0
         return unsafe _buffer.withMetadataPointer {
             (hashes: UnsafePointer<Int>) -> Index<Element>? in
@@ -71,7 +78,7 @@ extension Hash.Table where Element: ~Copyable {
 
                 if storedHash == hash {
                     let position = self[
-                        position: Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))
+                        position: Bucket.Position(_unchecked: Ordinal(UInt(bitPattern: bucket)))
                     ]
                     if equals(position, context) {
                         return position
@@ -90,15 +97,18 @@ extension Hash.Table where Element: ~Copyable {
     public borrowing func index(
         forHash hashValue: Hash.Value,
         equals: (Index<Element>) -> Bool
-    ) -> Bucket.Index? {
+    ) -> Bucket.Position? {
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
-        let capacity = Int(bitPattern: capacityCount)
+        let capacity = Int(bitPattern: capacityCount.underlying.rawValue)
         let mask = capacity &- 1
-        var bucket = Int(bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount))
+        var bucket = Int(
+            bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount).underlying
+                .rawValue
+        )
         var probes = 0
-        return unsafe _buffer.withMetadataPointer { (hashes: UnsafePointer<Int>) -> Bucket.Index? in
+        return unsafe _buffer.withMetadataPointer { (hashes: UnsafePointer<Int>) -> Bucket.Position? in
             while probes < capacity {
 
                 let storedHash = unsafe hashes[bucket]
@@ -108,7 +118,7 @@ extension Hash.Table where Element: ~Copyable {
                 }
 
                 if storedHash == hash {
-                    let found = Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))
+                    let found = Bucket.Position(_unchecked: Ordinal(UInt(bitPattern: bucket)))
                     let position = self[position: found]
                     if equals(position) {
                         return found
@@ -128,15 +138,18 @@ extension Hash.Table where Element: ~Copyable {
         forHash hashValue: Hash.Value,
         context: borrowing Context,
         equals: (Index<Element>, borrowing Context) -> Bool
-    ) -> Bucket.Index? {
+    ) -> Bucket.Position? {
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
-        let capacity = Int(bitPattern: capacityCount)
+        let capacity = Int(bitPattern: capacityCount.underlying.rawValue)
         let mask = capacity &- 1
-        var bucket = Int(bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount))
+        var bucket = Int(
+            bitPattern: Self.bucket(for: hash, seed: _seed, capacity: capacityCount).underlying
+                .rawValue
+        )
         var probes = 0
-        return unsafe _buffer.withMetadataPointer { (hashes: UnsafePointer<Int>) -> Bucket.Index? in
+        return unsafe _buffer.withMetadataPointer { (hashes: UnsafePointer<Int>) -> Bucket.Position? in
             while probes < capacity {
 
                 let storedHash = unsafe hashes[bucket]
@@ -146,7 +159,7 @@ extension Hash.Table where Element: ~Copyable {
                 }
 
                 if storedHash == hash {
-                    let found = Bucket.Index(_unchecked: Ordinal(UInt(bitPattern: bucket)))
+                    let found = Bucket.Position(_unchecked: Ordinal(UInt(bitPattern: bucket)))
                     let position = self[position: found]
                     if equals(position, context) {
                         return found
@@ -166,7 +179,10 @@ extension Hash.Table where Element: ~Copyable {
         hashValue: Hash.Value,
         equals: (Index<Element>) -> Bool
     ) -> Bool {
-        position(forHash: hashValue, equals: equals) != nil
+        if case .some = position(forHash: hashValue, equals: equals) {
+            return true
+        }
+        return false
     }
 
     @inlinable
@@ -175,6 +191,9 @@ extension Hash.Table where Element: ~Copyable {
         context: borrowing Context,
         equals: (Index<Element>, borrowing Context) -> Bool
     ) -> Bool {
-        position(forHash: hashValue, context: context, equals: equals) != nil
+        if case .some = position(forHash: hashValue, context: context, equals: equals) {
+            return true
+        }
+        return false
     }
 }

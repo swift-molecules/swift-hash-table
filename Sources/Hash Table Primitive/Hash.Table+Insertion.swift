@@ -1,19 +1,19 @@
 import Affine_Standard_Library_Integration
 public import Buffer_Linear_Primitive
-public import Buffer_Primitive
-public import Buffer_Slots_Primitive
-import Buffer_Slots
-import Cardinal
+public import Buffer
+public import Buffer_Slots
+public import Cardinal
 public import Cyclic_Index
-import Hash
+public import Hash
 public import Index
+public import Memory
 public import Memory_Allocator_Primitive
-public import Memory_Heap
-public import Ordinal_Standard_Library_Integration
-public import Storage_Contiguous
-public import Storage_Primitive
-public import Store_Primitive
+public import Memory_Small
+public import Ordinal
+public import Storage
+public import Storage_Memory
 public import Store_Split
+public import Tagged
 
 extension Hash.Table where Element: ~Copyable {
 
@@ -30,17 +30,17 @@ extension Hash.Table where Element: ~Copyable {
 
         let hash = Self.normalize(hashValue)
         var currentBucket = bucket.for(hash: hash)
-        var probes: Index<Bucket>.Count = .zero
+        var probes: UInt = 0
         let cap = bucketCapacity
 
-        while probes < cap {
+        while probes < cap.underlying.rawValue {
             let storedHash = self[hash: currentBucket]
 
             if storedHash == Self.empty {
                 self[hash: currentBucket] = hash
                 self[position: currentBucket] = position
                 self[bucketOfRank: position] = currentBucket
-                _count += .one
+                _count = Tagged(_unchecked: Cardinal(_count.underlying.rawValue &+ 1))
                 return true
             }
 
@@ -52,7 +52,7 @@ extension Hash.Table where Element: ~Copyable {
             }
 
             currentBucket = bucket.next(currentBucket)
-            probes += .one
+            probes &+= 1
         }
 
         return false
@@ -72,17 +72,17 @@ extension Hash.Table where Element: ~Copyable {
 
         let hash = Self.normalize(hashValue)
         var currentBucket = bucket.for(hash: hash)
-        var probes: Index<Bucket>.Count = .zero
+        var probes: UInt = 0
         let cap = bucketCapacity
 
-        while probes < cap {
+        while probes < cap.underlying.rawValue {
             let storedHash = self[hash: currentBucket]
 
             if storedHash == Self.empty {
                 self[hash: currentBucket] = hash
                 self[position: currentBucket] = position
                 self[bucketOfRank: position] = currentBucket
-                _count += .one
+                _count = Tagged(_unchecked: Cardinal(_count.underlying.rawValue &+ 1))
                 return true
             }
 
@@ -94,7 +94,7 @@ extension Hash.Table where Element: ~Copyable {
             }
 
             currentBucket = bucket.next(currentBucket)
-            probes += .one
+            probes &+= 1
         }
 
         return false
@@ -112,22 +112,22 @@ extension Hash.Table where Element: ~Copyable {
 
         let hash = Self.normalize(hashValue)
         var currentBucket = bucket.for(hash: hash)
-        var probes: Index<Bucket>.Count = .zero
+        var probes: UInt = 0
         let cap = bucketCapacity
 
-        while probes < cap {
+        while probes < cap.underlying.rawValue {
             let storedHash = self[hash: currentBucket]
 
             if storedHash == Self.empty {
                 self[hash: currentBucket] = hash
                 self[position: currentBucket] = position
                 self[bucketOfRank: position] = currentBucket
-                _count += .one
+                _count = Tagged(_unchecked: Cardinal(_count.underlying.rawValue &+ 1))
                 return
             }
 
             currentBucket = bucket.next(currentBucket)
-            probes += .one
+            probes &+= 1
         }
     }
 
@@ -135,14 +135,13 @@ extension Hash.Table where Element: ~Copyable {
     package mutating func grow() {
         let oldCapacity = bucketCapacity
         let newSeed = Self.makeSeed()
-        let newCapacity = Index<Bucket>.Count.max(
-            Index<Bucket>.Count(Cardinal(8 as UInt)),
-            oldCapacity * 2
+        let newCapacity = Tagged<Bucket, Cardinal>(
+            Swift.max(8, oldCapacity.underlying.rawValue &* 2)
         )
         var newBuffer = Buffer<
             Store.Split<
-                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
-                Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>,
+                Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>
             >
         >.Slots(
             capacity: newCapacity.retag(Int.self),
@@ -151,37 +150,38 @@ extension Hash.Table where Element: ~Copyable {
         newBuffer.fill(payload: 0)
         var newPlane = Self.makeRankPlane(bucketCapacity: newCapacity)
 
-        var bucket: Bucket.Index = .zero
-        var remaining = _count
-        while bucket < oldCapacity, remaining != .zero {
+        var bucketRaw: UInt = 0
+        var remaining = _count.underlying.rawValue
+        while bucketRaw < oldCapacity.underlying.rawValue, remaining != 0 {
+            let bucket = Bucket.Position(_unchecked: Ordinal(bucketRaw))
             let hash = self[hash: bucket]
             if hash != Self.empty {
                 let position = self[position: bucket]
                 var targetBucket = Self.bucket(for: hash, seed: newSeed, capacity: newCapacity)
 
-                var probes: Index<Bucket>.Count = .zero
+                var probes: UInt = 0
                 while newBuffer[metadata: targetBucket.retag(Int.self)] != Self.empty
-                    && probes < newCapacity
+                    && probes < newCapacity.underlying.rawValue
                 {
-                    targetBucket = Bucket.Index.Modular.successor(
+                    targetBucket = Bucket.Position.Modular.successor(
                         of: targetBucket,
                         capacity: newCapacity
                     )
-                    probes += .one
+                    probes &+= 1
                 }
 
                 newBuffer[metadata: targetBucket.retag(Int.self)] = hash
-                let rankRaw = Int(bitPattern: position)
+                let rankRaw = Int(bitPattern: position.underlying.rawValue)
                 newBuffer[payload: targetBucket.retag(Int.self)] = rankRaw
 
-                if rankRaw < Int(bitPattern: newPlane.count) {
+                if rankRaw < Int(bitPattern: newPlane.count.underlying.rawValue) {
                     newPlane[Index<Int>(_unchecked: Ordinal(UInt(bitPattern: rankRaw)))] = Int(
-                        bitPattern: targetBucket
+                        bitPattern: targetBucket.underlying.rawValue
                     )
                 }
-                remaining = remaining.subtract.saturating(.one)
+                remaining &-= 1
             }
-            bucket += .one
+            bucketRaw &+= 1
         }
 
         _seed = newSeed

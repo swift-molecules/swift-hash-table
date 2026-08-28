@@ -1,7 +1,11 @@
+public import Cardinal
 public import Hash
 public import Index
-import Ordinal
-internal import Property
+public import Ordinal
+public import Ownership
+public import Property
+public import Property_Ownership
+public import Tagged
 
 extension Hash.Table.Positions where Element: ~Copyable {
 
@@ -28,16 +32,15 @@ where Tag == Hash.Table<Element>.Positions, Base == Hash.Table<Element>, Element
 
     @inlinable
     public mutating func decrement(after removedPosition: Index<Element>) {
-        let removedRaw = Int(bitPattern: removedPosition)
-        var rank = Index<Element>(_unchecked: Ordinal(UInt(bitPattern: removedRaw + 1)))
-        let end = base.value._count.map(Ordinal.init)
-        while rank <= end {
+        var rankRaw = removedPosition.underlying.rawValue &+ 1
+        let endRaw = base.value._count.underlying.rawValue
+        while rankRaw <= endRaw {
+            let rank = Index<Element>(_unchecked: Ordinal(rankRaw))
             let bucket = base.value[bucketOfRank: rank]
-            let rankRaw = Int(bitPattern: rank)
-            let lowered = Index<Element>(_unchecked: Ordinal(UInt(bitPattern: rankRaw - 1)))
+            let lowered = Index<Element>(_unchecked: Ordinal(rankRaw &- 1))
             base.value[position: bucket] = lowered
             base.value[bucketOfRank: lowered] = bucket
-            rank = Index<Element>(_unchecked: Ordinal(UInt(bitPattern: rankRaw + 1)))
+            rankRaw &+= 1
         }
     }
 }

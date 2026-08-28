@@ -1,20 +1,21 @@
 import Affine_Standard_Library_Integration
-public import Buffer_Primitive
-public import Buffer_Slots_Primitive
-import Buffer_Slots
-import Cardinal
+public import Buffer
+public import Buffer_Slots
+public import Cardinal
 public import Cyclic_Index
-import Hash
+public import Hash
 public import Index
+public import Memory
 public import Memory_Allocator_Primitive
-public import Memory_Heap
-internal import Ordinal
-public import Ordinal_Standard_Library_Integration
-internal import Property
-public import Storage_Contiguous
-public import Storage_Primitive
-public import Store_Primitive
+public import Memory_Small
+public import Ordinal
+public import Ownership
+public import Property
+public import Property_Ownership
+public import Storage
+public import Storage_Memory
 public import Store_Split
+public import Tagged
 
 extension Hash.Table.Remove where Element: ~Copyable {
 
@@ -26,17 +27,17 @@ extension Hash.Table.Remove where Element: ~Copyable {
 extension Hash.Table where Element: ~Copyable {
 
     @inlinable
-    package func _distance(from: Bucket.Index, to: Bucket.Index) -> UInt {
-        let mask = UInt(bitPattern: Int(bitPattern: bucketCapacity)) &- 1
-        let rawTo = UInt(bitPattern: Int(bitPattern: to))
-        let rawFrom = UInt(bitPattern: Int(bitPattern: from))
+    package func _distance(from: Bucket.Position, to: Bucket.Position) -> UInt {
+        let mask = bucketCapacity.underlying.rawValue &- 1
+        let rawTo = to.underlying.rawValue
+        let rawFrom = from.underlying.rawValue
         return (rawTo &- rawFrom) & mask
     }
 
     @inlinable
-    package mutating func _shiftChain(into emptied: Bucket.Index) {
+    package mutating func _shiftChain(into emptied: Bucket.Position) {
         var hole = emptied
-        var current = Bucket.Index.Modular.successor(of: hole, capacity: bucketCapacity)
+        var current = Bucket.Position.Modular.successor(of: hole, capacity: bucketCapacity)
         while self[hash: current] != Self.empty {
             let ideal = Self.bucket(for: self[hash: current], seed: _seed, capacity: bucketCapacity)
 
@@ -47,7 +48,7 @@ extension Hash.Table where Element: ~Copyable {
                 self[hash: current] = Self.empty
                 hole = current
             }
-            current = Bucket.Index.Modular.successor(of: current, capacity: bucketCapacity)
+            current = Bucket.Position.Modular.successor(of: current, capacity: bucketCapacity)
         }
     }
 
@@ -63,7 +64,7 @@ extension Hash.Table where Element: ~Copyable {
 
         let position = self[position: index]
         self[hash: index] = Self.empty
-        _count = _count.subtract.saturating(.one)
+        _count = _count.subtracting(saturating: .one)
         _shiftChain(into: index)
         return position
     }
@@ -78,9 +79,9 @@ extension Hash.Table where Element: ~Copyable {
         let hash = Self.normalize(hashValue)
         let capacity = bucketCapacity
         var currentBucket = Self.bucket(for: hash, seed: _seed, capacity: capacity)
-        var probes: Index<Bucket>.Count = .zero
+        var probes: UInt = 0
 
-        while probes < capacity {
+        while probes < capacity.underlying.rawValue {
             let storedHash = self[hash: currentBucket]
 
             if storedHash == Self.empty {
@@ -91,24 +92,24 @@ extension Hash.Table where Element: ~Copyable {
                 let position = self[position: currentBucket]
                 if equals(position, context) {
                     self[hash: currentBucket] = Self.empty
-                    _count = _count.subtract.saturating(.one)
+                    _count = _count.subtracting(saturating: .one)
                     _shiftChain(into: currentBucket)
                     return position
                 }
             }
 
-            currentBucket = Bucket.Index.Modular.successor(of: currentBucket, capacity: capacity)
-            probes += .one
+            currentBucket = Bucket.Position.Modular.successor(of: currentBucket, capacity: capacity)
+            probes &+= 1
         }
 
         return nil
     }
 
     @inlinable
-    public mutating func remove(at bucketIdx: Bucket.Index) {
+    public mutating func remove(at bucketIdx: Bucket.Position) {
         precondition(self[hash: bucketIdx] != Self.empty)
         self[hash: bucketIdx] = Self.empty
-        _count = _count.subtract.saturating(.one)
+        _count = _count.subtracting(saturating: .one)
         _shiftChain(into: bucketIdx)
     }
 
@@ -138,8 +139,8 @@ where Tag == Hash.Table<Element>.Remove, Base == Hash.Table<Element>, Element: ~
             let hashCapacity = Hash.Table<Element>.bucketCapacity(for: .zero)
             var buffer = Buffer<
                 Store.Split<
-                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>,
-                    Storage<Memory.Allocator<Memory.Heap>>.Contiguous<Int>
+                    Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>,
+                    Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>
                 >
             >.Slots(
                 capacity: hashCapacity.retag(Int.self),

@@ -1,27 +1,26 @@
-import Affine_Standard_Library_Integration
+public import Cardinal
 public import Hash
-public import Index
+public import Tagged
 
 extension Hash.Table where Element: ~Copyable {
 
     @inlinable
-    public var count: Index<Element>.Count {
+    public var count: Tagged<Element, Cardinal> {
         _count
     }
 
     @inlinable
     public var isEmpty: Bool {
-        _count == .zero
+        _count.underlying.rawValue == 0
     }
 
     @inlinable
-    public var capacity: Index<Bucket>.Count {
+    public var capacity: Tagged<Bucket, Cardinal> {
         bucketCapacity
     }
 
     @inlinable
     package var shouldGrow: Bool {
-        typealias Scale = Affine.Discrete.Ratio<Bucket, Bucket>
-        return _count.retag(Bucket.self) * Scale(10) >= bucketCapacity * Scale(7)
+        _count.underlying.rawValue &* 10 >= bucketCapacity.underlying.rawValue &* 7
     }
 }
