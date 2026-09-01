@@ -1,3 +1,15 @@
+public import Hash_Protocol
+public import Store_Initialization
+public import Store_Operations
+public import Store_Protocol
+public import Store
+public import Ordinal_Tagged
+public import Ordinal_Protocol
+public import Ordinal_Cardinal
+public import Cardinal_Tagged
+public import Cardinal_Carrier
+public import Ownership_Inout
+public import Ownership_Borrow
 import Affine_Standard_Library_Integration
 public import Buffer_Linear_Primitive
 public import Buffer
@@ -5,6 +17,7 @@ public import Buffer_Slots
 public import Cardinal
 public import Cyclic_Index
 public import Hash
+public import Hash_Value
 public import Index
 public import Memory
 public import Memory_Allocator

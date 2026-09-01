@@ -1,3 +1,10 @@
+import Ordinal_Tagged
+import Cardinal_Tagged
+import Cardinal_Carrier
+import Ownership_Borrow
+import Ownership_Inout
+import Hash_Value
+public import Hash_Protocol
 import Buffer_Linear_Primitive
 import Buffer
 import Cardinal
@@ -822,8 +829,8 @@ extension `Hash.Indexed Model`.Integration {
 extension `Hash.Indexed Model`.Unit {
     @Test
     func `two instances, same ops: the lawful surface is seed-independent`() {
-        var first = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(8))
-        var second = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(8))
+        var first = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(_unchecked: Cardinal(8)))
+        var second = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(_unchecked: Cardinal(8)))
         var members: [Key] = []
 
         for id in 0..<48 {
@@ -865,7 +872,7 @@ extension `Hash.Indexed Model`.Unit {
             column.insert(Key(id: id, collisionDivisor: 5))
         }
         let count = column.count
-        #expect(count == Tagged<Key, Cardinal>(200))
+        #expect(count == Tagged<Key, Cardinal>(_unchecked: Cardinal(200)))
         for id in 0..<200 {
             let position = column.position(of: Key(id: id, collisionDivisor: 5))
             #expect(position == Index<Key>(_unchecked: Ordinal(UInt(id))))
@@ -881,7 +888,7 @@ extension `Hash.Indexed Model`.Unit {
 extension `Hash.Indexed Model`.`Edge Case` {
     @Test
     func `empty column: misses, absent removals, wipes, coherence`() {
-        var column = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(4))
+        var column = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(_unchecked: Cardinal(4)))
         let absent = Key(id: 7, group: 1)
         let contained = column.contains(absent)
         #expect(!contained)
@@ -892,7 +899,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
         column.removeAll(keepingCapacity: true)
         column.removeAll(keepingCapacity: false)
         let count = column.count
-        #expect(count == Tagged<Key, Cardinal>(0))
+        #expect(count == Tagged<Key, Cardinal>(_unchecked: Cardinal(0)))
         let coherent = Hash.Coherence.violations(column)
         #expect(coherent.isEmpty, "\(coherent)")
         column.insert(absent)
@@ -931,7 +938,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
 
     @Test
     func `single-element column: both mutate branches stay coherent`() {
-        var column = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(2))
+        var column = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(_unchecked: Cardinal(2)))
         column.insert(Key(id: 10, group: 3))
         let slot = Index<Key>(_unchecked: Ordinal(UInt(0)))
 

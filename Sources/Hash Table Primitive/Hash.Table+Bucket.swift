@@ -1,3 +1,17 @@
+public import Hash_Value
+public import Hash_Protocol
+public import Store_Initialization
+public import Store_Operations
+public import Store_Protocol
+public import Store
+public import Index
+public import Ordinal_Tagged
+public import Ordinal_Protocol
+public import Ordinal_Cardinal
+public import Cardinal_Tagged
+public import Cardinal_Carrier
+public import Ownership_Inout
+public import Ownership_Borrow
 public import Cyclic_Index
 public import Cardinal
 public import Hash

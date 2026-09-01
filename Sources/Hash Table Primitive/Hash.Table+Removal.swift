@@ -1,9 +1,22 @@
+public import Hash_Protocol
+public import Store_Initialization
+public import Store_Operations
+public import Store_Protocol
+public import Store
+public import Ordinal_Tagged
+public import Ordinal_Protocol
+public import Ordinal_Cardinal
+public import Cardinal_Tagged
+public import Cardinal_Carrier
+public import Ownership_Inout
+public import Ownership_Borrow
 import Affine_Standard_Library_Integration
 public import Buffer
 public import Buffer_Slots
 public import Cardinal
 public import Cyclic_Index
 public import Hash
+public import Hash_Value
 public import Index
 public import Memory
 public import Memory_Allocator
@@ -64,7 +77,7 @@ extension Hash.Table where Element: ~Copyable {
 
         let position = self[position: index]
         self[hash: index] = Self.empty
-        _count = _count.subtracting(saturating: .one)
+        _count = _count.subtract.saturating(.one)
         _shiftChain(into: index)
         return position
     }
@@ -92,7 +105,7 @@ extension Hash.Table where Element: ~Copyable {
                 let position = self[position: currentBucket]
                 if equals(position, context) {
                     self[hash: currentBucket] = Self.empty
-                    _count = _count.subtracting(saturating: .one)
+                    _count = _count.subtract.saturating(.one)
                     _shiftChain(into: currentBucket)
                     return position
                 }
@@ -109,7 +122,7 @@ extension Hash.Table where Element: ~Copyable {
     public mutating func remove(at bucketIdx: Bucket.Position) {
         precondition(self[hash: bucketIdx] != Self.empty)
         self[hash: bucketIdx] = Self.empty
-        _count = _count.subtracting(saturating: .one)
+        _count = _count.subtract.saturating(.one)
         _shiftChain(into: bucketIdx)
     }
 

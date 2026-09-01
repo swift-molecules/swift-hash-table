@@ -1,3 +1,10 @@
+import Ordinal_Tagged
+import Cardinal_Tagged
+import Cardinal_Carrier
+import Ownership_Borrow
+import Ownership_Inout
+import Hash_Value
+import Hash_Protocol
 import Buffer_Linear_Primitive
 import Buffer
 import Cardinal
@@ -32,7 +39,7 @@ struct `Hash Table Engine Tests` {
 
     @Test
     func `insert, position, duplicate rejection`() {
-        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(8))
+        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(8)))
         let inserted = table.insert(position: 0, hashValue: typedHash((42)), equals: { _ in false })
         #expect(inserted)
         let found = table.position(forHash: typedHash((42)), equals: { $0 == 0 })
@@ -40,12 +47,12 @@ struct `Hash Table Engine Tests` {
         let duplicate = table.insert(position: 1, hashValue: typedHash((42)), equals: { $0 == 0 })
         #expect(!duplicate)
         let n = table.count
-        #expect(n == Tagged<Int, Cardinal>(1))
+        #expect(n == Tagged<Int, Cardinal>(_unchecked: Cardinal(1)))
     }
 
     @Test
     func `backward shift keeps collision chains findable after removal`() {
-        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(8))
+        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(8)))
 
         let h = typedHash((7))
         table.insert(position: 0, hashValue: h, equals: { _ in false })
@@ -59,7 +66,7 @@ struct `Hash Table Engine Tests` {
         #expect(p1 == 1)
         #expect(p2 == 2)
         let n = table.count
-        #expect(n == Tagged<Int, Cardinal>(2))
+        #expect(n == Tagged<Int, Cardinal>(_unchecked: Cardinal(2)))
 
         _ = table.remove(hashValue: h, equals: { $0 == 1 })
         let p2b = table.position(forHash: h, equals: { $0 == 2 })
@@ -68,7 +75,7 @@ struct `Hash Table Engine Tests` {
 
     @Test
     func `growth rehashes and re-seeds; entries stay findable`() {
-        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(2))
+        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(2)))
         var i = 0
         while i < 64 {
             table.insert(
@@ -79,7 +86,7 @@ struct `Hash Table Engine Tests` {
             i += 1
         }
         let n = table.count
-        #expect(n == Tagged<Int, Cardinal>(64))
+        #expect(n == Tagged<Int, Cardinal>(_unchecked: Cardinal(64)))
         var missing = 0
         i = 0
         while i < 64 {
@@ -94,7 +101,7 @@ struct `Hash Table Engine Tests` {
 
     @Test
     func `clone preserves seed and layout; the copies diverge independently`() {
-        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(8))
+        var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(8)))
         table.insert(position: 0, hashValue: typedHash((1)), equals: { _ in false })
         table.insert(position: 1, hashValue: typedHash((2)), equals: { _ in false })
         var copy = table.clone()
@@ -201,7 +208,7 @@ struct `Hash Indexed Law Tests` {
 
     @Test
     func `the index-coherence laws hold through inserts and removals`() {
-        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(4))
+        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
         var i = 0
         while i < 20 {
             column.insert(i * 7)
@@ -220,7 +227,7 @@ struct `Hash Indexed Tests` {
 
     @Test
     func `removing the only member clears lookup state`() {
-        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(4))
+        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
         column.insert(7)
         let removed = column.remove(7)
         #expect(removed == 7)
@@ -234,7 +241,7 @@ struct `Hash Indexed Tests` {
 
     @Test
     func `insert, contains, duplicate hand-back, counts`() {
-        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(4))
+        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
         let first = column.insert(10)
         #expect(first == nil)
         let dup = column.insert(10)
@@ -245,12 +252,12 @@ struct `Hash Indexed Tests` {
         #expect(has10)
         #expect(!has30)
         let n = column.count
-        #expect(n == Tagged<Int, Cardinal>(2))
+        #expect(n == Tagged<Int, Cardinal>(_unchecked: Cardinal(2)))
     }
 
     @Test
     func `removal preserves insertion order and stays coherent past growth`() {
-        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(2))
+        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(2)))
         var i = 0
         while i < 12 {
             column.insert(i)
@@ -269,7 +276,7 @@ struct `Hash Indexed Tests` {
 
     @Test
     func `interior removal rides the seam lawfully: sixteen inserts, then remove 9 and remove 0`() {
-        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(4))
+        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
         var i = 0
         while i < 16 {
             column.insert(i)
@@ -283,7 +290,7 @@ struct `Hash Indexed Tests` {
         column.forEach { seen.append($0) }
         #expect(seen == [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15])
         let n = column.count
-        #expect(n == Tagged<Int, Cardinal>(14))
+        #expect(n == Tagged<Int, Cardinal>(_unchecked: Cardinal(14)))
         let violations = Hash.Coherence.violations(column)
         #expect(violations.isEmpty, "\(violations)")
 
@@ -304,7 +311,7 @@ struct `Hash Indexed Tests` {
         while start < 16 {
             var stride = 1
             while stride <= 5 {
-                var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(4))
+                var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
                 var expected: [Int] = []
                 var i = 0
                 while i < 16 {
@@ -340,7 +347,7 @@ struct `Hash Indexed Tests` {
 
     @Test
     func `removeAll empties both planes; reuse works`() {
-        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(4))
+        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
         column.insert(1)
         column.insert(2)
         column.removeAll()
@@ -355,7 +362,7 @@ struct `Hash Indexed Tests` {
 
     @Test
     func `clone detaches both planes`() {
-        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(4))
+        var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
         column.insert(1)
         column.insert(2)
         var copy = column.clone()
@@ -378,7 +385,7 @@ struct `Hash Indexed Teardown Tests` {
         HashProbe.reset()
         do {
             var column = OrderedColumn<HashItem>(
-                minimumCapacity: Tagged<HashItem, Cardinal>(4)
+                minimumCapacity: Tagged<HashItem, Cardinal>(_unchecked: Cardinal(4))
             )
             column.insert(HashItem(1))
             column.insert(HashItem(2))

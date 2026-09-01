@@ -1,9 +1,24 @@
+public import Hash_Protocol
+public import Store_Initialization
+public import Store_Operations
+public import Store_Protocol
+public import Store
+public import Index
+public import Ordinal_Tagged
+public import Ordinal_Protocol
+public import Ordinal_Cardinal
+public import Ordinal
+public import Cardinal_Tagged
+public import Cardinal_Carrier
+public import Ownership_Inout
+public import Ownership_Borrow
 import Affine_Standard_Library_Integration
 public import Buffer_Linear_Primitive
 public import Buffer
 public import Buffer_Slots
 public import Cardinal
 public import Hash
+public import Hash_Value
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
@@ -82,7 +97,7 @@ extension Hash {
         ) -> Tagged<Bucket, Cardinal> {
             let minCap = Int(bitPattern: minimumCapacity.underlying.rawValue)
             guard minCap > 0 else {
-                return Tagged<Bucket, Cardinal>(8)
+                return Tagged<Bucket, Cardinal>(_unchecked: Cardinal(8))
             }
 
             let needed = max(8, (minCap * 10) / 7)
