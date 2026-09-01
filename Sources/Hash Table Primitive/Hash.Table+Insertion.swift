@@ -7,7 +7,7 @@ public import Cyclic_Index
 public import Hash
 public import Index
 public import Memory
-public import Memory_Allocator_Primitive
+public import Memory_Allocator
 public import Memory_Small
 public import Ordinal
 public import Storage

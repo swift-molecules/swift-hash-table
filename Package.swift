@@ -151,7 +151,7 @@ let package = Package(
                 .product(name: "Memory", package: "swift-memory"),
                 .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
-                    name: "Memory Allocator Primitive",
+                    name: "Memory Allocator",
                     package: "swift-memory-allocation"
                 ),
                 .product(
@@ -181,7 +181,7 @@ let package = Package(
                 .product(name: "Memory", package: "swift-memory"),
                 .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
-                    name: "Memory Allocator Primitive",
+                    name: "Memory Allocator",
                     package: "swift-memory-allocation"
                 ),
                 .product(
@@ -227,7 +227,7 @@ let package = Package(
                 .product(name: "Memory", package: "swift-memory"),
                 .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
-                    name: "Memory Allocator Primitive",
+                    name: "Memory Allocator",
                     package: "swift-memory-allocation"
                 ),
                 .product(name: "Ordinal", package: "swift-ordinal"),
@@ -250,7 +250,7 @@ let package = Package(
                 .product(name: "Memory", package: "swift-memory"),
                 .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
-                    name: "Memory Allocator Primitive",
+                    name: "Memory Allocator",
                     package: "swift-memory-allocation"
                 ),
                 .product(name: "Index", package: "swift-index"),

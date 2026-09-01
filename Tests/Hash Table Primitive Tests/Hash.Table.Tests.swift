@@ -7,7 +7,7 @@ import Hash_Table
 import Hash_Table_Test_Support
 import Index
 import Memory
-import Memory_Allocator_Primitive
+import Memory_Allocator
 import Memory_Small
 import Ordinal
 import Ordinal_Standard_Library_Integration

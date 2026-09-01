@@ -6,7 +6,7 @@ public import Hash
 import Hash_Table_Primitive
 import Index
 public import Memory
-public import Memory_Allocator_Primitive
+public import Memory_Allocator
 public import Memory_Small
 import Ordinal
 public import Storage

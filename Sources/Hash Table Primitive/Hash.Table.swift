@@ -5,7 +5,7 @@ public import Buffer_Slots
 public import Cardinal
 public import Hash
 public import Memory
-public import Memory_Allocator_Primitive
+public import Memory_Allocator
 public import Memory_Small
 public import Storage
 public import Storage_Memory
