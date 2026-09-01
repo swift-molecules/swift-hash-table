@@ -178,6 +178,7 @@ let package = Package(
         .target(
             name: "Hash Indexed Primitive",
             dependencies: [
+                .product(name: "Buffer Protocol", package: "swift-buffer"),
                 .product(name: "Hash Protocol", package: "swift-hash"),
                 .product(name: "Ownership Borrow", package: "swift-ownership"),
                 .product(name: "Ownership Inout", package: "swift-ownership"),
