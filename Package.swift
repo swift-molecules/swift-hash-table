@@ -34,6 +34,10 @@ let package = Package(
     ],
     dependencies: [
         .package(
+            url: "https://github.com/swift-atoms/swift-store.git",
+            branch: "main"
+        ),
+        .package(
             url: "https://github.com/swift-atoms/swift-index.git",
             branch: "main"
         ),
@@ -90,10 +94,6 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-storage-split.git",
-            branch: "main"
-        ),
-        .package(
             url: "https://github.com/swift-molecules/swift-storage-memory.git",
             branch: "main"
         ),
@@ -147,7 +147,7 @@ let package = Package(
                 ),
                 .product(name: "Storage", package: "swift-storage"),
                 .product(name: "Storage Memory", package: "swift-storage-memory"),
-                .product(name: "Store Split", package: "swift-storage-split"),
+                .product(name: "Store Split", package: "swift-store"),
                 .product(name: "Memory", package: "swift-memory"),
                 .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
