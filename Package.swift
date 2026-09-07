@@ -120,8 +120,7 @@ let package = Package(
             name: "Hash Table Primitive",
             dependencies: [
                 .product(name: "Hash Protocol", package: "swift-hash"),
-                .product(name: "Ownership Borrow", package: "swift-ownership"),
-                .product(name: "Ownership Inout", package: "swift-ownership"),
+                .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
                 .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
@@ -139,7 +138,6 @@ let package = Package(
                     name: "Property Ownership",
                     package: "swift-property-ownership"
                 ),
-                .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(
                     name: "Ordinal Standard Library Integration",
@@ -180,8 +178,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Buffer Protocol", package: "swift-buffer"),
                 .product(name: "Hash Protocol", package: "swift-hash"),
-                .product(name: "Ownership Borrow", package: "swift-ownership"),
-                .product(name: "Ownership Inout", package: "swift-ownership"),
+                .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
                 .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
@@ -235,8 +232,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Hash Protocol", package: "swift-hash"),
                 .product(name: "Hash Value", package: "swift-hash"),
-                .product(name: "Ownership Borrow", package: "swift-ownership"),
-                .product(name: "Ownership Inout", package: "swift-ownership"),
+                .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
@@ -259,8 +255,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Hash Protocol", package: "swift-hash"),
-                .product(name: "Ownership Borrow", package: "swift-ownership"),
-                .product(name: "Ownership Inout", package: "swift-ownership"),
+                .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
                 .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
@@ -298,8 +293,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Hash Protocol", package: "swift-hash"),
                 .product(name: "Hash Value", package: "swift-hash"),
-                .product(name: "Ownership Borrow", package: "swift-ownership"),
-                .product(name: "Ownership Inout", package: "swift-ownership"),
+                .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
                 .product(name: "Ordinal Cardinal", package: "swift-ordinal"),

@@ -9,13 +9,11 @@ public import Ordinal_Protocol
 public import Ordinal_Cardinal
 public import Cardinal_Tagged
 public import Cardinal_Carrier
-public import Ownership_Inout
-public import Ownership_Borrow
+public import Ownership
 public import Cardinal
 public import Hash
 public import Index
 public import Ordinal
-public import Ownership
 public import Property
 public import Property_Ownership
 public import Tagged

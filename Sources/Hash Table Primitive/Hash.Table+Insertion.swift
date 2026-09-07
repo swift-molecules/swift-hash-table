@@ -8,8 +8,7 @@ public import Ordinal_Protocol
 public import Ordinal_Cardinal
 public import Cardinal_Tagged
 public import Cardinal_Carrier
-public import Ownership_Inout
-public import Ownership_Borrow
+public import Ownership
 import Affine_Standard_Library_Integration
 public import Buffer_Linear_Primitive
 public import Buffer

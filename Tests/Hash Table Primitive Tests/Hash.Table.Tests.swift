@@ -1,8 +1,7 @@
 import Ordinal_Tagged
 import Cardinal_Tagged
 import Cardinal_Carrier
-import Ownership_Borrow
-import Ownership_Inout
+import Ownership
 import Hash_Value
 import Hash_Protocol
 import Buffer_Linear_Primitive

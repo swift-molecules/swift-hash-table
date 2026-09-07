@@ -8,8 +8,7 @@ public import Ordinal_Protocol
 public import Ordinal_Cardinal
 public import Cardinal_Tagged
 public import Cardinal_Carrier
-public import Ownership_Inout
-public import Ownership_Borrow
+public import Ownership
 import Affine_Standard_Library_Integration
 public import Buffer
 public import Buffer_Slots
@@ -22,7 +21,6 @@ public import Memory
 public import Memory_Allocator
 public import Memory_Small
 public import Ordinal
-public import Ownership
 public import Property
 public import Property_Ownership
 public import Storage

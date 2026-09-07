@@ -10,8 +10,7 @@ public import Ordinal_Cardinal
 public import Ordinal
 public import Cardinal_Tagged
 public import Cardinal_Carrier
-public import Ownership_Inout
-public import Ownership_Borrow
+public import Ownership
 public import Hash
 public import Hash_Value
 import Index
