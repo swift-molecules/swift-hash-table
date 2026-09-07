@@ -1,8 +1,4 @@
-public import Hash_Value
-public import Hash_Protocol
-public import Store_Initialization
-public import Store_Operations
-public import Store_Protocol
+public import Hash
 public import Store
 public import Ordinal_Tagged
 public import Ordinal_Protocol
@@ -13,7 +9,6 @@ public import Ownership
 public import Buffer_Linear_Primitive
 public import Buffer_Slots
 public import Cardinal
-public import Hash
 public import Index
 public import Memory
 public import Memory_Allocator
@@ -21,7 +16,6 @@ public import Memory_Small
 public import Ordinal
 public import Storage
 public import Storage_Memory
-public import Store_Split
 public import Tagged
 
 extension Hash.Table where Element: ~Copyable {

@@ -5,8 +5,7 @@ public import Ordinal
 public import Cardinal_Tagged
 public import Cardinal_Carrier
 public import Ownership
-public import Hash_Value
-public import Hash_Protocol
+public import Hash
 #if canImport(Darwin)
     import Darwin
 #elseif os(Android)

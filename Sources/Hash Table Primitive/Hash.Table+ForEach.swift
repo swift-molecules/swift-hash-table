@@ -1,8 +1,4 @@
-public import Hash_Value
-public import Hash_Protocol
-public import Store_Initialization
-public import Store_Operations
-public import Store_Protocol
+public import Hash
 public import Store
 public import Ordinal_Tagged
 public import Ordinal_Protocol
@@ -11,7 +7,6 @@ public import Cardinal_Tagged
 public import Cardinal_Carrier
 public import Ownership
 public import Cardinal
-public import Hash
 public import Index
 public import Ordinal
 public import Property

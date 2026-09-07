@@ -2,13 +2,11 @@ public import Ordinal_Tagged
 public import Cardinal_Tagged
 public import Cardinal_Carrier
 public import Ownership
-public import Hash_Value
-public import Hash_Protocol
+public import Hash
 public import Buffer_Linear_Primitive
 public import Buffer
 import Cardinal
 public import Hash_Indexed_Primitive
-public import Hash
 import Hash_Table_Primitive
 import Index
 public import Memory

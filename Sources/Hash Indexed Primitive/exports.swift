@@ -1,6 +1,3 @@
-public import Store_Initialization
-public import Store_Operations
-public import Store_Protocol
 public import Store
 public import Index
 public import Tagged

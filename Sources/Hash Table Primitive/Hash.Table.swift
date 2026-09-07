@@ -1,7 +1,4 @@
-public import Hash_Protocol
-public import Store_Initialization
-public import Store_Operations
-public import Store_Protocol
+public import Hash
 public import Store
 public import Index
 public import Ordinal_Tagged
@@ -16,14 +13,11 @@ public import Buffer_Linear_Primitive
 public import Buffer
 public import Buffer_Slots
 public import Cardinal
-public import Hash
-public import Hash_Value
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
 public import Storage
 public import Storage_Memory
-public import Store_Split
 public import Tagged
 
 extension Hash {

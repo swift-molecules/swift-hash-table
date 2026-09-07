@@ -5,6 +5,5 @@ public import Ordinal
 public import Cardinal_Tagged
 public import Cardinal_Carrier
 public import Ownership
-public import Hash_Value
-public import Hash_Protocol
+public import Hash
 @_exported public import Hash_Table

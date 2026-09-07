@@ -1,7 +1,4 @@
-public import Hash_Protocol
-public import Store_Initialization
-public import Store_Operations
-public import Store_Protocol
+public import Hash
 public import Store
 public import Ordinal_Tagged
 public import Ordinal_Protocol
@@ -14,8 +11,6 @@ public import Buffer_Linear_Primitive
 import Buffer_Linear
 public import Buffer
 public import Cardinal
-public import Hash
-public import Hash_Value
 public import Hash_Table_Primitive
 public import Index
 public import Memory

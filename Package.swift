@@ -119,7 +119,7 @@ let package = Package(
         .target(
             name: "Hash Table Primitive",
             dependencies: [
-                .product(name: "Hash Protocol", package: "swift-hash"),
+                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
@@ -127,12 +127,7 @@ let package = Package(
                 .product(name: "Ordinal Protocol", package: "swift-ordinal"),
                 .product(name: "Ordinal Tagged", package: "swift-ordinal"),
                 .product(name: "Store", package: "swift-store"),
-                .product(name: "Store Protocol", package: "swift-store"),
-                .product(name: "Store Operations", package: "swift-store"),
-                .product(name: "Store Initialization", package: "swift-store"),
                 .product(name: "Index", package: "swift-index"),
-                .product(name: "Hash", package: "swift-hash"),
-                .product(name: "Hash Value", package: "swift-hash"),
                 .product(name: "Property", package: "swift-property"),
                 .product(
                     name: "Property Ownership",
@@ -158,7 +153,6 @@ let package = Package(
                 ),
                 .product(name: "Storage", package: "swift-storage"),
                 .product(name: "Storage Memory", package: "swift-storage-memory"),
-                .product(name: "Store Split", package: "swift-store"),
                 .product(name: "Memory", package: "swift-memory"),
                 .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
@@ -176,8 +170,8 @@ let package = Package(
         .target(
             name: "Hash Indexed Primitive",
             dependencies: [
-                .product(name: "Buffer Protocol", package: "swift-buffer"),
-                .product(name: "Hash Protocol", package: "swift-hash"),
+                .product(name: "Buffer", package: "swift-buffer"),
+                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
@@ -185,14 +179,8 @@ let package = Package(
                 .product(name: "Ordinal Protocol", package: "swift-ordinal"),
                 .product(name: "Ordinal Tagged", package: "swift-ordinal"),
                 .product(name: "Store", package: "swift-store"),
-                .product(name: "Store Protocol", package: "swift-store"),
-                .product(name: "Store Operations", package: "swift-store"),
-                .product(name: "Store Initialization", package: "swift-store"),
                 "Hash Table Primitive",
-                .product(name: "Hash", package: "swift-hash"),
-                .product(name: "Hash Value", package: "swift-hash"),
                 .product(name: "Storage", package: "swift-storage"),
-                .product(name: "Buffer", package: "swift-buffer"),
                 .product(
                     name: "Buffer Linear Primitive",
                     package: "swift-buffer-linear"
@@ -230,8 +218,7 @@ let package = Package(
         .target(
             name: "Hash Table",
             dependencies: [
-                .product(name: "Hash Protocol", package: "swift-hash"),
-                .product(name: "Hash Value", package: "swift-hash"),
+                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
@@ -242,9 +229,6 @@ let package = Package(
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Store", package: "swift-store"),
-                .product(name: "Store Protocol", package: "swift-store"),
-                .product(name: "Store Operations", package: "swift-store"),
-                .product(name: "Store Initialization", package: "swift-store"),
                 "Hash Table Primitive",
                 "Hash Indexed Primitive",
             ]
@@ -254,7 +238,7 @@ let package = Package(
             name: "Hash Table Test Support",
             dependencies: [
                 .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Hash Protocol", package: "swift-hash"),
+                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
@@ -263,17 +247,12 @@ let package = Package(
                 .product(name: "Ordinal Tagged", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(name: "Store", package: "swift-store"),
-                .product(name: "Store Protocol", package: "swift-store"),
-                .product(name: "Store Operations", package: "swift-store"),
-                .product(name: "Store Initialization", package: "swift-store"),
                 "Hash Table",
                 .product(name: "Buffer", package: "swift-buffer"),
                 .product(
                     name: "Buffer Linear Primitive",
                     package: "swift-buffer-linear"
                 ),
-                .product(name: "Hash", package: "swift-hash"),
-                .product(name: "Hash Value", package: "swift-hash"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Storage", package: "swift-storage"),
                 .product(name: "Storage Memory", package: "swift-storage-memory"),
@@ -291,8 +270,7 @@ let package = Package(
         .testTarget(
             name: "Hash Table Primitive Tests",
             dependencies: [
-                .product(name: "Hash Protocol", package: "swift-hash"),
-                .product(name: "Hash Value", package: "swift-hash"),
+                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal Carrier", package: "swift-cardinal"),
                 .product(name: "Cardinal Tagged", package: "swift-cardinal"),
@@ -300,9 +278,6 @@ let package = Package(
                 .product(name: "Ordinal Protocol", package: "swift-ordinal"),
                 .product(name: "Ordinal Tagged", package: "swift-ordinal"),
                 .product(name: "Store", package: "swift-store"),
-                .product(name: "Store Protocol", package: "swift-store"),
-                .product(name: "Store Operations", package: "swift-store"),
-                .product(name: "Store Initialization", package: "swift-store"),
                 "Hash Table",
                 "Hash Table Test Support",
                 .product(name: "Buffer", package: "swift-buffer"),
