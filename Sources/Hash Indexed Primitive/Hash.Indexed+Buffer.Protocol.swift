@@ -2,7 +2,7 @@ public import Buffer
 public import Cardinal
 public import Hash
 public import Index
-public import Ordinal_Protocol
+public import Ordinal
 public import Store
 public import Tagged
 

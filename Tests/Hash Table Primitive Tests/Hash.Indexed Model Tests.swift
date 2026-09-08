@@ -1,23 +1,19 @@
-import Ordinal_Tagged
-import Cardinal_Tagged
-import Cardinal_Carrier
+import Ordinal
+import Cardinal
 import Ownership
 public import Hash
 import Buffer_Linear_Primitive
 import Buffer
-import Cardinal
 import Hash_Table
 public import Hash_Table_Test_Support
 import Index
 import Memory
 import Memory_Allocator
 import Memory_Small
-import Ordinal
-import Ordinal_Standard_Library_Integration
 import Storage
 import Storage_Memory
 import Tagged
-import Tagged_Standard_Library_Integration
+import Tagged
 import Testing
 
 private typealias DenseStorage<E: ~Copyable> =

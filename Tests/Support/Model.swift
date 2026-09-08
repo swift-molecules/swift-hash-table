@@ -1,9 +1,7 @@
 public import Index
 public import Tagged
-public import Ordinal_Tagged
 public import Ordinal
-public import Cardinal_Tagged
-public import Cardinal_Carrier
+public import Cardinal
 public import Ownership
 public import Hash
 #if canImport(Darwin)

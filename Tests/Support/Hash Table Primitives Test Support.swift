@@ -1,6 +1,5 @@
-public import Ordinal_Tagged
-public import Cardinal_Tagged
-public import Cardinal_Carrier
+public import Ordinal
+public import Cardinal
 public import Ownership
 public import Hash
 public import Buffer_Linear_Primitive

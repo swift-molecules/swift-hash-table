@@ -121,11 +121,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
+                .product(name: "Cardinal", package: "swift-cardinal"),
+                .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(name: "Store", package: "swift-store"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Property", package: "swift-property"),
@@ -133,16 +130,10 @@ let package = Package(
                     name: "Property Ownership",
                     package: "swift-property-ownership"
                 ),
-                .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(
-                    name: "Affine Standard Library Integration",
+                    name: "Affine",
                     package: "swift-affine"
                 ),
-                .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Cyclic Index", package: "swift-cyclic-index"),
                 .product(name: "Finite", package: "swift-finite"),
                 .product(name: "Buffer", package: "swift-buffer"),
@@ -173,11 +164,8 @@ let package = Package(
                 .product(name: "Buffer", package: "swift-buffer"),
                 .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
+                .product(name: "Cardinal", package: "swift-cardinal"),
+                .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(name: "Store", package: "swift-store"),
                 "Hash Table Primitive",
                 .product(name: "Storage", package: "swift-storage"),
@@ -201,15 +189,9 @@ let package = Package(
                     package: "swift-memory-allocation"
                 ),
                 .product(name: "Index", package: "swift-index"),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(
-                    name: "Affine Standard Library Integration",
+                    name: "Affine",
                     package: "swift-affine"
                 ),
             ]
@@ -220,12 +202,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
+                .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Store", package: "swift-store"),
@@ -240,11 +218,7 @@ let package = Package(
                 .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
+                .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(name: "Store", package: "swift-store"),
                 "Hash Table",
@@ -262,7 +236,6 @@ let package = Package(
                     name: "Memory Allocator",
                     package: "swift-memory-allocation"
                 ),
-                .product(name: "Ordinal", package: "swift-ordinal"),
             ],
             path: "Tests/Support"
         ),
@@ -272,11 +245,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
+                .product(name: "Cardinal", package: "swift-cardinal"),
+                .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(name: "Store", package: "swift-store"),
                 "Hash Table",
                 "Hash Table Test Support",
@@ -294,20 +264,14 @@ let package = Package(
                     package: "swift-memory-allocation"
                 ),
                 .product(name: "Index", package: "swift-index"),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(
-                    name: "Hash Standard Library Integration",
+                    name: "Hash",
                     package: "swift-hash"
                 ),
                 .product(
-                    name: "Tagged Standard Library Integration",
+                    name: "Tagged",
                     package: "swift-tagged"
-                ),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
                 ),
             ]
         ),

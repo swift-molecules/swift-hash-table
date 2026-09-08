@@ -1,16 +1,11 @@
 public import Hash
 public import Store
 public import Index
-public import Ordinal_Tagged
-public import Ordinal_Protocol
-public import Ordinal_Cardinal
-public import Cardinal_Tagged
-public import Cardinal_Carrier
-public import Ownership
+public import Ordinal
 public import Cardinal
+public import Ownership
 public import Hash_Table_Primitive
 public import struct Index.Index
-public import Ordinal
 public import Storage
 public import Tagged
 

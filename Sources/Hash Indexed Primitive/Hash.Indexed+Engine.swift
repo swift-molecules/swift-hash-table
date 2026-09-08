@@ -1,22 +1,17 @@
 public import Hash
 public import Store
-public import Ordinal_Tagged
-public import Ordinal_Protocol
-public import Ordinal_Cardinal
-public import Cardinal_Tagged
-public import Cardinal_Carrier
+public import Ordinal
+public import Cardinal
 public import Ownership
-import Affine_Standard_Library_Integration
+import Affine
 public import Buffer_Linear_Primitive
 import Buffer_Linear
 public import Buffer
-public import Cardinal
 public import Hash_Table_Primitive
 public import Index
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
-public import Ordinal
 public import Storage
 public import Storage_Memory
 public import Tagged
