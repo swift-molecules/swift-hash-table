@@ -5,7 +5,6 @@ public import Cardinal
 public import Ownership
 public import Index
 public import Property
-public import Property_Ownership
 public import Tagged
 
 extension Hash.Table.Positions where Element: ~Copyable {

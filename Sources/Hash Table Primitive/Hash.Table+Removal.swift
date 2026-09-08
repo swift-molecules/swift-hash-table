@@ -12,10 +12,9 @@ public import Memory
 public import Memory_Allocator
 public import Memory_Small
 public import Property
-public import Property_Ownership
+public import Tagged
 public import Storage
 public import Storage_Memory
-public import Tagged
 
 extension Hash.Table.Remove where Element: ~Copyable {
 

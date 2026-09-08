@@ -6,7 +6,6 @@ public import Cardinal
 public import Ownership
 public import Cyclic_Index
 public import Property
-public import Property_Ownership
 public import Tagged
 
 extension Hash.Table.Bucket.Ops where Element: ~Copyable {

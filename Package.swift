@@ -50,10 +50,6 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-property-ownership.git",
-            branch: "main"
-        ),
-        .package(
             url: "https://github.com/swift-atoms/swift-ownership.git",
             branch: "main"
         ),
@@ -126,10 +122,6 @@ let package = Package(
                 .product(name: "Store", package: "swift-store"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Property", package: "swift-property"),
-                .product(
-                    name: "Property Ownership",
-                    package: "swift-property-ownership"
-                ),
                 .product(
                     name: "Affine",
                     package: "swift-affine"
