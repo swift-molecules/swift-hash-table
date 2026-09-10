@@ -1,9 +1,9 @@
 public import Hash
-public import Store
+import Store
 public import Tagged
-public import Ordinal
-public import Cardinal
-public import Ownership
+import Ordinal
+import Cardinal
+import Ownership
 import Index
 
 public protocol __HashTableProtocol: ~Copyable {

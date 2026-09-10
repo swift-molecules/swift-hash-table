@@ -1,5 +1,5 @@
 public import Hash
-public import Store
+import Store
 public import Ordinal
 public import Cardinal
 public import Ownership

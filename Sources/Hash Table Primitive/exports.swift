@@ -1,6 +1,6 @@
-public import Store
-public import Index
-public import Tagged
-public import Ordinal
-public import Cardinal
-public import Ownership
+import Store
+import Index
+import Tagged
+import Ordinal
+import Cardinal
+import Ownership

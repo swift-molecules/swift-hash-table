@@ -1,9 +1,9 @@
 public import Hash
 public import Store
-public import Index
-public import Ordinal
+import Index
+import Ordinal
 public import Cardinal
-public import Ownership
+import Ownership
 import Affine
 public import Buffer_Linear_Primitive
 public import Buffer

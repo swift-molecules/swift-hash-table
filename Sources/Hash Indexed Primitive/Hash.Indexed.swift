@@ -3,10 +3,10 @@ public import Store
 public import Index
 public import Ordinal
 public import Cardinal
-public import Ownership
+import Ownership
 public import Hash_Table_Primitive
 public import struct Index.Index
-public import Storage
+import Storage
 public import Tagged
 
 extension Hash {

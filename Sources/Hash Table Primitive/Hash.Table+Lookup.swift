@@ -1,8 +1,8 @@
 public import Hash
-public import Store
+import Store
 public import Ordinal
 public import Cardinal
-public import Ownership
+import Ownership
 public import Buffer_Slots
 public import Index
 public import Tagged

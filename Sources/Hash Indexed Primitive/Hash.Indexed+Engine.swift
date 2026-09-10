@@ -2,7 +2,7 @@ public import Hash
 public import Store
 public import Ordinal
 public import Cardinal
-public import Ownership
+import Ownership
 import Affine
 public import Buffer_Linear_Primitive
 import Buffer_Linear

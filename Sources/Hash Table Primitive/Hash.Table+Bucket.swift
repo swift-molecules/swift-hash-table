@@ -1,6 +1,6 @@
 public import Hash
-public import Store
-public import Index
+import Store
+import Index
 public import Ordinal
 public import Cardinal
 public import Ownership

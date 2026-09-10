@@ -1,9 +1,9 @@
 public import Hash
-public import Store
+import Store
 public import Tagged
-public import Ordinal
-public import Cardinal
-public import Ownership
+import Ordinal
+import Cardinal
+import Ownership
 public import Index
 
 extension Hash.Table: __HashTableProtocol where Element: ~Copyable {
