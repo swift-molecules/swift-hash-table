@@ -1,10 +1,8 @@
 import Ordinal
 import Cardinal
 import Ownership
-import Hash
 import Buffer_Linear_Primitive
 import Buffer
-import Hash
 import Hash_Table
 import Hash_Table_Test_Support
 import Index
@@ -12,8 +10,6 @@ import Memory
 import Memory_Allocator
 import Memory_Small
 import Storage
-import Storage_Memory
-import Tagged
 import Tagged
 import Testing
 
@@ -21,10 +17,10 @@ private typealias DenseStorage<E: ~Copyable> =
     Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>
 
 private typealias DenseColumn<E: ~Copyable> = Buffer<DenseStorage<E>>.Linear
-private typealias OrderedColumn<E: Hash.Key & ~Copyable> = Hash.Indexed<DenseColumn<E>>
+private typealias OrderedColumn<E: Swift.Hashable & ~Copyable> = Hash.Indexed<DenseColumn<E>>
 
-private func typedHash<T: Hash.`Protocol` & ~Copyable>(_ value: borrowing T) -> Hash.Value {
-    value.hashValue
+private func typedHash<T: Swift.Hashable & ~Copyable>(_ value: borrowing T) -> Hash.Value {
+    Hash.Value(_unchecked: value.hashValue)
 }
 
 @Suite
@@ -409,7 +405,7 @@ private struct HashItem: ~Copyable {
     deinit { HashProbe.recordDestroy(id) }
 }
 
-extension HashItem: Hash.`Protocol` {
+extension HashItem: Swift.Hashable {
     borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

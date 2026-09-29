@@ -1,4 +1,3 @@
-public import Hash
 public import Store
 public import Index
 public import Tagged

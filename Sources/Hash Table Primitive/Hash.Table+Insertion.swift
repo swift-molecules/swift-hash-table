@@ -1,4 +1,3 @@
-public import Hash
 public import Store
 public import Ordinal
 public import Cardinal
@@ -7,13 +6,12 @@ import Affine
 public import Buffer_Linear_Primitive
 public import Buffer
 public import Buffer_Slots
-public import Cyclic_Index
+public import Cyclic
 public import Index
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
 public import Storage
-public import Storage_Memory
 public import Tagged
 
 extension Hash.Table where Element: ~Copyable {

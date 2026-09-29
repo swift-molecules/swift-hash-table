@@ -1,6 +1,6 @@
 import Store
 import Index
-import Tagged
+@_exported public import Tagged
 import Ordinal
 import Cardinal
 import Ownership

@@ -1,4 +1,3 @@
-public import Hash
 import Store
 public import Ordinal
 public import Cardinal

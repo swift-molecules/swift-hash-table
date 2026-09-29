@@ -1,19 +1,17 @@
 public import Ordinal
 public import Cardinal
 public import Ownership
-public import Hash
 public import Buffer_Linear_Primitive
 public import Buffer
 import Cardinal
 public import Hash_Indexed_Primitive
-import Hash_Table_Primitive
+public import Hash_Table_Primitive
 import Index
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
 import Ordinal
 public import Storage
-public import Storage_Memory
 import Tagged
 
 extension Hash {
@@ -23,7 +21,7 @@ extension Hash {
 
 extension Hash.Coherence {
 
-    public static func violations<E: Hash.Key & Copyable>(
+    public static func violations<E: Swift.Hashable & Copyable>(
         _ column: borrowing Hash.Indexed<Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear>
     ) -> [String] {
         var found: [String] = []
@@ -49,7 +47,7 @@ extension Hash.Coherence {
                 liveEntries &+= 1
                 let position = column.indices[position: bucket]
                 if position.underlying.rawValue < end {
-                    let memberHash = Hash.Table<E>.normalize(column[position].hashValue)
+                    let memberHash = Hash.Table<E>.normalize(Hash.Value(_unchecked: column[position].hashValue))
                     if memberHash != storedHash {
                         found.append("law 2: bucket \(bucket) stores hash \(storedHash) but the member at dense slot \(position) hashes to \(memberHash)")
                     }

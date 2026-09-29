@@ -1,11 +1,9 @@
-public import Hash
 public import Store
 public import Index
 public import Ordinal
 public import Cardinal
 import Ownership
 public import Hash_Table_Primitive
-public import struct Index.Index
 import Storage
 public import Tagged
 
@@ -17,7 +15,7 @@ extension Hash {
 @_documentation(visibility: public)
 @frozen
 public struct __HashIndexed<Dense: Store.`Protocol` & ~Copyable>: ~Copyable
-where Dense.Element: Hash.Key {
+where Dense.Element: Swift.Hashable {
 
     @usableFromInline
     package var elements: Dense
@@ -53,9 +51,9 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
             yield elements[slot]
         }
         _modify {
-            let oldHash = elements[slot].hashValue
+            let oldHash = Hash.Value(_unchecked: elements[slot].hashValue)
             yield &elements[slot]
-            let newHash = elements[slot].hashValue
+            let newHash = Hash.Value(_unchecked: elements[slot].hashValue)
             if oldHash != newHash {
                 indices.remove(hashValue: oldHash, context: slot) { position, mutated in
                     position.underlying.rawValue == mutated.underlying.rawValue
@@ -74,7 +72,7 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
             slot.underlying.rawValue == indices.count.underlying.rawValue,
             "indexed seam: initialize is lawful only at the back (slot == count)"
         )
-        let hashValue = element.hashValue
+        let hashValue = Hash.Value(_unchecked: element.hashValue)
         elements.initialize(at: slot, to: element)
         indices.insert(_unchecked: (), position: slot, hashValue: hashValue)
     }
@@ -89,7 +87,7 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
             "indexed seam: move is lawful only at the back (slot == count − 1)"
         )
         let element = elements.move(at: slot)
-        indices.remove(hashValue: element.hashValue, context: slot) { position, removed in
+        indices.remove(hashValue: Hash.Value(_unchecked: element.hashValue), context: slot) { position, removed in
             position.underlying.rawValue == removed.underlying.rawValue
         }
         return element
@@ -106,7 +104,7 @@ extension __HashIndexed where Dense: ~Copyable {
 
     @inlinable
     public func position(of element: borrowing Dense.Element) -> Index<Dense.Element>? {
-        indices.position(forHash: element.hashValue, context: element) { position, candidate in
+        indices.position(forHash: Hash.Value(_unchecked: element.hashValue), context: element) { position, candidate in
             elements[position] == candidate
         }
     }

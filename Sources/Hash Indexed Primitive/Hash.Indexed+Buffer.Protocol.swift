@@ -1,6 +1,6 @@
 public import Buffer
 import Cardinal
-import Hash
+import Hash_Table_Primitive
 import Index
 import Ordinal
 import Store

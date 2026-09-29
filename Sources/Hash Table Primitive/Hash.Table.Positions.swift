@@ -1,4 +1,3 @@
-public import Hash
 import Store
 import Tagged
 import Ordinal

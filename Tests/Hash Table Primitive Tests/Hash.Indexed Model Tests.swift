@@ -1,18 +1,16 @@
 import Ordinal
 import Cardinal
 import Ownership
-public import Hash
 import Buffer_Linear_Primitive
 import Buffer
 import Hash_Table
 public import Hash_Table_Test_Support
+public import Buffer_Test_Support
 import Index
 import Memory
 import Memory_Allocator
 import Memory_Small
 import Storage
-import Storage_Memory
-import Tagged
 import Tagged
 import Testing
 
@@ -20,10 +18,10 @@ private typealias DenseStorage<E: ~Copyable> =
     Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>
 
 private typealias DenseColumn<E: ~Copyable> = Buffer<DenseStorage<E>>.Linear
-private typealias OrderedColumn<E: Hash.Key & ~Copyable> = Hash.Indexed<DenseColumn<E>>
+private typealias OrderedColumn<E: Swift.Hashable & ~Copyable> = Hash.Indexed<DenseColumn<E>>
 
-private func typedHash<T: Hash.`Protocol` & ~Copyable>(_ value: borrowing T) -> Hash.Value {
-    value.hashValue
+private func typedHash<T: Swift.Hashable & ~Copyable>(_ value: borrowing T) -> Hash.Value {
+    Hash.Value(_unchecked: value.hashValue)
 }
 
 private struct Key {
@@ -40,7 +38,7 @@ private struct Key {
     }
 }
 
-extension Key: Hash.`Protocol` {
+extension Key: Swift.Hashable {
     borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(group)
     }
@@ -566,7 +564,7 @@ private func runEngineStream(seed: UInt64) -> Model.Verdict {
     return stream.finish()
 }
 
-extension Model.Element.Tracked: Hash.`Protocol` {
+extension Model.Element.Tracked: Swift.Hashable {
 
     public borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(group)

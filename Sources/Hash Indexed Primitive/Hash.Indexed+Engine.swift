@@ -1,4 +1,3 @@
-public import Hash
 public import Store
 public import Ordinal
 public import Cardinal
@@ -13,14 +12,14 @@ public import Memory
 public import Memory_Allocator
 public import Memory_Small
 public import Storage
-public import Storage_Memory
 public import Tagged
+public import Memory_Allocator_Protocol
 
 extension __HashIndexed where Dense: ~Copyable {
 
     @inlinable
-    public init<E: ~Copyable>(minimumCapacity: Tagged<E, Cardinal> = .zero)
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear {
+    public init<E: ~Copyable, Resource: Memory.Growable & ~Copyable>(minimumCapacity: Tagged<E, Cardinal> = .zero)
+    where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
         self.init(
             elements: Dense(minimumCapacity: minimumCapacity),
             indices: Hash.Table(minimumCapacity: minimumCapacity)
@@ -29,9 +28,9 @@ extension __HashIndexed where Dense: ~Copyable {
 
     @inlinable
     @discardableResult
-    public mutating func insert<E: ~Copyable>(_ element: consuming E) -> E?
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear {
-        let hashValue = element.hashValue
+    public mutating func insert<E: ~Copyable, Resource: Memory.Growable & ~Copyable>(_ element: consuming E) -> E?
+    where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
+        let hashValue = Hash.Value(_unchecked: element.hashValue)
         let duplicate = indices.position(forHash: hashValue, context: element) {
             position,
             candidate in
@@ -47,11 +46,11 @@ extension __HashIndexed where Dense: ~Copyable {
     }
 
     @inlinable
-    public mutating func remove<E: ~Copyable>(_ element: borrowing E) -> E?
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear {
+    public mutating func remove<E: ~Copyable, Resource: Memory.Growable & ~Copyable>(_ element: borrowing E) -> E?
+    where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
         guard let position = position(of: element) else { return nil }
 
-        let storedHash = elements[position].hashValue
+        let storedHash = Hash.Value(_unchecked: elements[position].hashValue)
         let erased = indices.remove(hashValue: storedHash, context: position) { candidate, removed in
             candidate.underlying.rawValue == removed.underlying.rawValue
         }
@@ -64,8 +63,8 @@ extension __HashIndexed where Dense: ~Copyable {
     }
 
     @inlinable
-    public mutating func removeAll<E: ~Copyable>(keepingCapacity: Bool = true)
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear {
+    public mutating func removeAll<E: ~Copyable, Resource: Memory.Growable & ~Copyable>(keepingCapacity: Bool = true)
+    where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
         elements.removeAll(keepingCapacity: keepingCapacity)
         indices.remove.all(keepingCapacity: keepingCapacity)
     }
@@ -85,9 +84,9 @@ extension __HashIndexed where Dense: ~Copyable {
 extension __HashIndexed where Dense: ~Copyable {
 
     @inlinable
-    public func clone<E>() -> Self
+    public func clone<E, Resource: Memory.Growable & ~Copyable>() -> Self
     where
-        Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear,
+        Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear,
         E: Copyable
     {
         var copy = Self(minimumCapacity: .zero)
@@ -100,29 +99,29 @@ extension __HashIndexed where Dense: ~Copyable {
 extension __HashIndexed where Dense: ~Copyable {
 
     @inlinable
-    public func position<E: ~Copyable, Context: ~Copyable>(
+    public func position<E: ~Copyable, Context: ~Copyable, Resource: Memory.Growable & ~Copyable>(
         matching hashValue: Hash.Value,
         context: borrowing Context,
         equals: (borrowing E, borrowing Context) -> Bool
     ) -> Index<E>?
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear {
+    where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
         indices.position(forHash: hashValue, context: context) { position, context in
             equals(elements[position], context)
         }
     }
 
     @inlinable
-    public mutating func remove<E: ~Copyable, Context: ~Copyable>(
+    public mutating func remove<E: ~Copyable, Context: ~Copyable, Resource: Memory.Growable & ~Copyable>(
         matching hashValue: Hash.Value,
         context: borrowing Context,
         equals: (borrowing E, borrowing Context) -> Bool
     ) -> E?
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear {
+    where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
         guard let position = position(matching: hashValue, context: context, equals: equals) else {
             return nil
         }
 
-        let storedHash = elements[position].hashValue
+        let storedHash = Hash.Value(_unchecked: elements[position].hashValue)
         let erased = indices.remove(hashValue: storedHash, context: position) { candidate, removed in
             candidate.underlying.rawValue == removed.underlying.rawValue
         }
@@ -138,8 +137,8 @@ extension __HashIndexed where Dense: ~Copyable {
 extension __HashIndexed where Dense: ~Copyable {
 
     @inlinable
-    package mutating func _removeShiftingDown<E: ~Copyable>(at position: Index<E>) -> E
-    where Dense == Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear {
+    package mutating func _removeShiftingDown<E: ~Copyable, Resource: Memory.Growable & ~Copyable>(at position: Index<E>) -> E
+    where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
 
         var frontier = elements.count.underlying.rawValue &- 1
         var carry = elements.move(at: Index<E>(_unchecked: Ordinal(frontier)))

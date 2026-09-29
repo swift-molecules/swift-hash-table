@@ -1,4 +1,3 @@
-public import Hash
 public import Store
 import Index
 import Ordinal
@@ -12,7 +11,6 @@ public import Memory
 public import Memory_Allocator
 public import Memory_Small
 public import Storage
-public import Storage_Memory
 public import Tagged
 
 extension Hash {

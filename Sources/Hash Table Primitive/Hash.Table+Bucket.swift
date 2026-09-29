@@ -1,10 +1,9 @@
-public import Hash
 import Store
 import Index
 public import Ordinal
 public import Cardinal
 public import Ownership
-public import Cyclic_Index
+public import Cyclic
 public import Property
 public import Tagged
 

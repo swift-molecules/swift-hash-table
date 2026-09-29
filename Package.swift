@@ -42,10 +42,6 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-atoms/swift-hash.git",
-            branch: "main"
-        ),
-        .package(
             url: "https://github.com/swift-atoms/swift-property.git",
             branch: "main"
         ),
@@ -66,10 +62,6 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-cyclic-index.git",
-            branch: "main"
-        ),
-        .package(
             url: "https://github.com/swift-atoms/swift-finite.git",
             branch: "main"
         ),
@@ -87,20 +79,10 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/swift-atoms/swift-storage.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-storage-memory.git",
-            branch: "main"
-        ),
+            branch: "main", traits: ["Generational", "Memory"]),
         .package(
             url: "https://github.com/swift-molecules/swift-memory-allocation.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-memory-small.git",
-            branch: "main"
-        ),
+            branch: "main", traits: ["MemorySmall"]),
         .package(
             url: "https://github.com/swift-atoms/swift-memory.git",
             branch: "main"
@@ -109,13 +91,13 @@ let package = Package(
             url: "https://github.com/swift-atoms/swift-tagged.git",
             branch: "main"
         ),
+        .package(url: "https://github.com/swift-atoms/swift-cyclic.git", branch: "main", traits: ["Index"]),
     ],
     targets: [
 
         .target(
             name: "Hash Table Primitive",
             dependencies: [
-                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
@@ -126,7 +108,6 @@ let package = Package(
                     name: "Affine",
                     package: "swift-affine"
                 ),
-                .product(name: "Cyclic Index", package: "swift-cyclic-index"),
                 .product(name: "Finite", package: "swift-finite"),
                 .product(name: "Buffer", package: "swift-buffer"),
                 .product(name: "Buffer Slots", package: "swift-buffer-slots"),
@@ -135,9 +116,7 @@ let package = Package(
                     package: "swift-buffer-linear"
                 ),
                 .product(name: "Storage", package: "swift-storage"),
-                .product(name: "Storage Memory", package: "swift-storage-memory"),
                 .product(name: "Memory", package: "swift-memory"),
-                .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
                     name: "Memory Allocator",
                     package: "swift-memory-allocation"
@@ -147,6 +126,8 @@ let package = Package(
                     package: "swift-memory-allocation"
                 ),
                 .product(name: "Tagged", package: "swift-tagged"),
+                .product(name: "Cyclic", package: "swift-cyclic"),
+                .product(name: "Memory Small", package: "swift-memory-allocation"),
             ]
         ),
 
@@ -154,7 +135,6 @@ let package = Package(
             name: "Hash Indexed Primitive",
             dependencies: [
                 .product(name: "Buffer", package: "swift-buffer"),
-                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
@@ -169,9 +149,7 @@ let package = Package(
                     name: "Buffer Linear",
                     package: "swift-buffer-linear"
                 ),
-                .product(name: "Storage Memory", package: "swift-storage-memory"),
                 .product(name: "Memory", package: "swift-memory"),
-                .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
                     name: "Memory Allocator",
                     package: "swift-memory-allocation"
@@ -186,13 +164,13 @@ let package = Package(
                     name: "Affine",
                     package: "swift-affine"
                 ),
+                .product(name: "Memory Small", package: "swift-memory-allocation"),
             ]
         ),
 
         .target(
             name: "Hash Table",
             dependencies: [
-                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
@@ -208,7 +186,6 @@ let package = Package(
             name: "Hash Table Test Support",
             dependencies: [
                 .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
@@ -221,13 +198,12 @@ let package = Package(
                 ),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Storage", package: "swift-storage"),
-                .product(name: "Storage Memory", package: "swift-storage-memory"),
                 .product(name: "Memory", package: "swift-memory"),
-                .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
                     name: "Memory Allocator",
                     package: "swift-memory-allocation"
                 ),
+                .product(name: "Memory Small", package: "swift-memory-allocation"),
             ],
             path: "Tests/Support"
         ),
@@ -235,7 +211,6 @@ let package = Package(
         .testTarget(
             name: "Hash Table Primitive Tests",
             dependencies: [
-                .product(name: "Hash", package: "swift-hash"),
                 .product(name: "Ownership", package: "swift-ownership"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
@@ -243,14 +218,13 @@ let package = Package(
                 "Hash Table",
                 "Hash Table Test Support",
                 .product(name: "Buffer", package: "swift-buffer"),
+                .product(name: "Buffer Test Support", package: "swift-buffer"),
                 .product(
                     name: "Buffer Linear Primitive",
                     package: "swift-buffer-linear"
                 ),
                 .product(name: "Storage", package: "swift-storage"),
-                .product(name: "Storage Memory", package: "swift-storage-memory"),
                 .product(name: "Memory", package: "swift-memory"),
-                .product(name: "Memory Small", package: "swift-memory-small"),
                 .product(
                     name: "Memory Allocator",
                     package: "swift-memory-allocation"
@@ -258,13 +232,10 @@ let package = Package(
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(
-                    name: "Hash",
-                    package: "swift-hash"
-                ),
-                .product(
                     name: "Tagged",
                     package: "swift-tagged"
                 ),
+                .product(name: "Memory Small", package: "swift-memory-allocation"),
             ]
         ),
     ],
