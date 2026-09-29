@@ -9,7 +9,6 @@ public import Hash_Table_Primitive
 import Index
 public import Memory
 public import Memory_Allocator
-public import Memory_Small
 import Ordinal
 public import Storage
 import Tagged
@@ -21,8 +20,8 @@ extension Hash {
 
 extension Hash.Coherence {
 
-    public static func violations<E: Swift.Hashable & Copyable>(
-        _ column: borrowing Hash.Indexed<Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>>.Linear>
+    public static func violations<E: Swift.Hashable & Copyable, Resource: Memory.Region & ~Copyable>(
+        _ column: borrowing Hash.Indexed<Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear>
     ) -> [String] {
         var found: [String] = []
         let end = column.count.underlying.rawValue
