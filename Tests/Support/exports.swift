@@ -1,6 +1,6 @@
-public import Index
-public import Tagged
-public import Ordinal
-public import Cardinal
-public import Ownership
+internal import Index
+internal import Tagged
+internal import Ordinal
+internal import Cardinal
+internal import Ownership
 @_exported public import Hash_Table

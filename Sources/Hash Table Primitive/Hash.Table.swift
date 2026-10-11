@@ -39,9 +39,6 @@ extension Hash {
             Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear
 
         @inlinable
-        package static var empty: Int { 0 }
-
-        @inlinable
         public init(minimumCapacity: Tagged<Element, Cardinal> = .zero) {
             let hashCapacity = Self.bucketCapacity(for: minimumCapacity)
             _count = .zero
@@ -69,7 +66,7 @@ extension Hash {
             )
 
             plane.append(addingCapacity: bucketCapacity.retag(Int.self)) {
-                (span: inout Swift.OutputSpan<Int>) in
+                (span: inout Swift::OutputSpan<Int>) in
                 while !span.isFull {
                     span.append(0)
                 }
@@ -93,17 +90,22 @@ extension Hash {
         }
 
         @inlinable
-        package static func normalize(_ hashValue: Hash.Value) -> Int {
-            let raw = hashValue.underlying
-            return raw == 0 ? 1 : raw
-        }
-
-        @inlinable
         package static func makeSeed() -> Int {
             var generator = SystemRandomNumberGenerator()
             return Int(bitPattern: UInt(truncatingIfNeeded: generator.next() as UInt64))
         }
 
+    }
+}
+
+extension Hash.Table where Element: ~Copyable {
+    @inlinable
+    package static var empty: Int { 0 }
+
+    @inlinable
+    package static func normalize(_ hashValue: Hash.Value) -> Int {
+        let raw = hashValue.underlying
+        return raw == 0 ? 1 : raw
     }
 }
 

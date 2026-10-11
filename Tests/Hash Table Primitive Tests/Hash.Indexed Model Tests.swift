@@ -18,9 +18,9 @@ private typealias DenseStorage<E: ~Copyable> =
     Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>
 
 private typealias DenseColumn<E: ~Copyable> = Buffer<DenseStorage<E>>.Linear
-private typealias OrderedColumn<E: Swift.Hashable & ~Copyable> = Hash.Indexed<DenseColumn<E>>
+private typealias OrderedColumn<E: Swift::Hashable & ~Copyable> = Hash.Indexed<DenseColumn<E>>
 
-private func typedHash<T: Swift.Hashable & ~Copyable>(_ value: borrowing T) -> Hash.Value {
+private func typedHash<T: Swift::Hashable & ~Copyable>(_ value: borrowing T) -> Hash.Value {
     Hash.Value(_unchecked: value.hashValue)
 }
 
@@ -38,7 +38,7 @@ private struct Key {
     }
 }
 
-extension Key: Swift.Hashable {
+extension Key: Swift::Hashable {
     borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(group)
     }
@@ -50,7 +50,7 @@ extension Key: Swift.Hashable {
 
 private struct Reference {
     var members: [Key] = []
-    var ids: Swift.Set<Int> = []
+    var ids: Swift::Set<Int> = []
 
     var graveyard: [(id: Int, group: Int)] = []
 }
@@ -564,7 +564,7 @@ private func runEngineStream(seed: UInt64) -> Model.Verdict {
     return stream.finish()
 }
 
-extension Model.Element.Tracked: Swift.Hashable {
+extension Model.Element.Tracked: @retroactive Swift::Hashable {
 
     public borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(group)

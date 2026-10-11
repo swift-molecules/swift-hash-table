@@ -17,9 +17,9 @@ private typealias DenseStorage<E: ~Copyable> =
     Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<E>
 
 private typealias DenseColumn<E: ~Copyable> = Buffer<DenseStorage<E>>.Linear
-private typealias OrderedColumn<E: Swift.Hashable & ~Copyable> = Hash.Indexed<DenseColumn<E>>
+private typealias OrderedColumn<E: Swift::Hashable & ~Copyable> = Hash.Indexed<DenseColumn<E>>
 
-private func typedHash<T: Swift.Hashable & ~Copyable>(_ value: borrowing T) -> Hash.Value {
+private func typedHash<T: Swift::Hashable & ~Copyable>(_ value: borrowing T) -> Hash.Value {
     Hash.Value(_unchecked: value.hashValue)
 }
 
@@ -405,7 +405,7 @@ private struct HashItem: ~Copyable {
     deinit { HashProbe.recordDestroy(id) }
 }
 
-extension HashItem: Swift.Hashable {
+extension HashItem: Swift::Hashable {
     borrowing func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

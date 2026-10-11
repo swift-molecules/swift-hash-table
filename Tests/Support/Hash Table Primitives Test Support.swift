@@ -1,15 +1,15 @@
-public import Ordinal
-public import Cardinal
-public import Ownership
+internal import Ordinal
+internal import Cardinal
+internal import Ownership
 public import Buffer_Linear_Primitive
 public import Buffer
-import Cardinal
+internal import Cardinal
 public import Hash_Indexed_Primitive
 public import Hash_Table_Primitive
 import Index
 public import Memory
 public import Memory_Allocator
-import Ordinal
+internal import Ordinal
 public import Storage
 import Tagged
 
@@ -20,7 +20,7 @@ extension Hash {
 
 extension Hash.Coherence {
 
-    public static func violations<E: Swift.Hashable & Copyable, Resource: Memory.Region & ~Copyable>(
+    public static func violations<E: Swift::Hashable & Copyable, Resource: Memory.Region & ~Copyable>(
         _ column: borrowing Hash.Indexed<Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear>
     ) -> [String] {
         var found: [String] = []

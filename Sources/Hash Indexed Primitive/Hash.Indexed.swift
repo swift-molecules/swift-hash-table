@@ -15,7 +15,7 @@ extension Hash {
 @_documentation(visibility: public)
 @frozen
 public struct __HashIndexed<Dense: Store.`Protocol` & ~Copyable>: ~Copyable
-where Dense.Element: Swift.Hashable {
+where Dense.Element: Swift::Hashable {
 
     @usableFromInline
     package var elements: Dense
@@ -29,7 +29,9 @@ where Dense.Element: Swift.Hashable {
         self.elements = elements
         self.indices = indices
     }
+}
 
+extension __HashIndexed where Dense: ~Copyable {
     @inlinable
     public consuming func take() -> Dense {
         elements

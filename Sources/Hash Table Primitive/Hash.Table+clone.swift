@@ -10,7 +10,7 @@ public import Index
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
-import Ordinal
+public import Ordinal
 public import Storage
 public import Tagged
 

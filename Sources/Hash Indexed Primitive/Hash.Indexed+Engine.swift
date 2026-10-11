@@ -10,7 +10,7 @@ public import Hash_Table_Primitive
 public import Index
 public import Memory
 public import Memory_Allocator
-public import Memory_Small
+internal import Memory_Small
 public import Storage
 public import Tagged
 public import Memory_Allocator_Protocol

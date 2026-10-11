@@ -135,7 +135,7 @@ extension Hash.Table where Element: ~Copyable {
         let oldCapacity = bucketCapacity
         let newSeed = Self.makeSeed()
         let newCapacity = Tagged<Bucket, Cardinal>(
-            Swift.max(8, oldCapacity.underlying.rawValue &* 2)
+            Swift::max(8, oldCapacity.underlying.rawValue &* 2)
         )
         var newBuffer = Buffer<
             Store.Split<
