@@ -1,10 +1,10 @@
-public import Store
+public import Cardinal
+public import Hash_Table_Primitive
 public import Index
 public import Ordinal
-public import Cardinal
 import Ownership
-public import Hash_Table_Primitive
 import Storage
+public import Store
 public import Tagged
 
 extension Hash {

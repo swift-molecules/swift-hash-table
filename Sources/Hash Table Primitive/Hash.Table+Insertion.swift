@@ -1,17 +1,17 @@
-public import Store
-public import Ordinal
-public import Cardinal
-import Ownership
 import Affine
-public import Buffer_Linear_Primitive
 public import Buffer
+public import Buffer_Linear_Primitive
 public import Buffer_Slots
+public import Cardinal
 public import Cyclic
 public import Index
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
+public import Ordinal
+import Ownership
 public import Storage
+public import Store
 public import Tagged
 
 extension Hash.Table where Element: ~Copyable {

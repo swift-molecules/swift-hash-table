@@ -1,6 +1,6 @@
-import Store
-import Index
-import Tagged
-import Ordinal
 import Cardinal
+import Index
+import Ordinal
 import Ownership
+import Store
+import Tagged

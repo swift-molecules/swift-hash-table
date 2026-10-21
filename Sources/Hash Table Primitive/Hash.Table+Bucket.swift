@@ -1,10 +1,10 @@
-import Store
+public import Cardinal
+public import Cyclic
 import Index
 public import Ordinal
-public import Cardinal
 public import Ownership
-public import Cyclic
 public import Property
+import Store
 public import Tagged
 
 extension Hash.Table.Bucket.Ops where Element: ~Copyable {
@@ -46,8 +46,7 @@ where Tag == Hash.Table<Element>.Bucket.Ops, Base == Hash.Table<Element>, Elemen
     }
 
     @inlinable
-    public func next(_ bucket: Hash.Table<Element>.Bucket.Position) -> Hash.Table<Element>.Bucket.Position
-    {
+    public func next(_ bucket: Hash.Table<Element>.Bucket.Position) -> Hash.Table<Element>.Bucket.Position {
         let capacity = base.value.bucketCapacity
         return Hash.Table<Element>.Bucket.Position.Modular.successor(of: bucket, capacity: capacity)
     }

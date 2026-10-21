@@ -1,19 +1,19 @@
-public import Store
-public import Ordinal
-public import Cardinal
-import Ownership
 import Affine
-public import Buffer_Linear_Primitive
-import Buffer_Linear
 public import Buffer
+import Buffer_Linear
+public import Buffer_Linear_Primitive
+public import Cardinal
 public import Hash_Table_Primitive
 public import Index
 public import Memory
 public import Memory_Allocator
-internal import Memory_Small
-public import Storage
-public import Tagged
 public import Memory_Allocator_Protocol
+internal import Memory_Small
+public import Ordinal
+import Ownership
+public import Storage
+public import Store
+public import Tagged
 
 extension __HashIndexed where Dense: ~Copyable {
 

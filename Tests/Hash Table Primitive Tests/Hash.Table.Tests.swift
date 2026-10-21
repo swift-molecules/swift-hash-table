@@ -1,14 +1,14 @@
-import Ordinal
-import Cardinal
-import Ownership
-import Buffer_Linear_Primitive
 import Buffer
+import Buffer_Linear_Primitive
+import Cardinal
 import Hash_Table
 import Hash_Table_Test_Support
 import Index
 import Memory
 import Memory_Allocator
 import Memory_Small
+import Ordinal
+import Ownership
 import Storage
 import Tagged
 import Testing
@@ -294,8 +294,7 @@ struct `Hash Indexed Tests` {
     }
 
     @Test
-    func `draining a sixteen-element column in any order preserves insertion order and coherence`()
-    {
+    func `draining a sixteen-element column in any order preserves insertion order and coherence`() {
         var start = 0
         while start < 16 {
             var stride = 1

@@ -1,8 +1,8 @@
-import Store
+public import Cardinal
 import Index
 import Ordinal
-public import Cardinal
 import Ownership
+import Store
 public import Tagged
 
 extension Hash.Table where Element: ~Copyable {

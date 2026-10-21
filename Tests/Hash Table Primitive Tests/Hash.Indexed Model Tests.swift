@@ -1,15 +1,15 @@
-import Ordinal
-import Cardinal
-import Ownership
-import Buffer_Linear_Primitive
 import Buffer
+import Buffer_Linear_Primitive
+public import Buffer_Test_Support
+import Cardinal
 import Hash_Table
 public import Hash_Table_Test_Support
-public import Buffer_Test_Support
 import Index
 import Memory
 import Memory_Allocator
 import Memory_Small
+import Ordinal
+import Ownership
 import Storage
 import Tagged
 import Testing
@@ -908,8 +908,7 @@ extension `Hash.Indexed Model`.`Edge Case` {
 
             column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))
 
-            if let rejected = column.insert(Model.Element.Tracked(id: 1, group: 0, census: census))
-            {
+            if let rejected = column.insert(Model.Element.Tracked(id: 1, group: 0, census: census)) {
                 let serial = rejected.serial
                 #expect(serial == 1)
             } else {

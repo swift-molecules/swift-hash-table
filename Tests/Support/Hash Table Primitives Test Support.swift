@@ -1,8 +1,5 @@
-internal import Ordinal
-internal import Cardinal
-internal import Ownership
-public import Buffer_Linear_Primitive
 public import Buffer
+public import Buffer_Linear_Primitive
 internal import Cardinal
 public import Hash_Indexed_Primitive
 public import Hash_Table_Primitive
@@ -10,6 +7,7 @@ import Index
 public import Memory
 public import Memory_Allocator
 internal import Ordinal
+internal import Ownership
 public import Storage
 import Tagged
 

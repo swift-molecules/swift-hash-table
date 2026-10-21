@@ -1,16 +1,16 @@
-public import Store
-import Index
-import Ordinal
-public import Cardinal
-import Ownership
 import Affine
-public import Buffer_Linear_Primitive
 public import Buffer
+public import Buffer_Linear_Primitive
 public import Buffer_Slots
+public import Cardinal
+import Index
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
+import Ordinal
+import Ownership
 public import Storage
+public import Store
 public import Tagged
 
 extension Hash {
@@ -35,8 +35,7 @@ extension Hash {
             >.Slots
 
         @usableFromInline
-        package var _rankToBucket:
-            Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear
+        package var _rankToBucket: Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear
 
         @inlinable
         public init(minimumCapacity: Tagged<Element, Cardinal> = .zero) {

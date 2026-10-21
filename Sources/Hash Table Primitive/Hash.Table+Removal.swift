@@ -1,18 +1,18 @@
-public import Store
-public import Ordinal
-public import Cardinal
-public import Ownership
 import Affine
 public import Buffer
 public import Buffer_Slots
+public import Cardinal
 public import Cyclic
 public import Index
 public import Memory
 public import Memory_Allocator
 public import Memory_Small
+public import Ordinal
+public import Ownership
 public import Property
-public import Tagged
 public import Storage
+public import Store
+public import Tagged
 
 extension Hash.Table.Remove where Element: ~Copyable {
 

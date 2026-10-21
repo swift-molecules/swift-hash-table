@@ -1,9 +1,9 @@
-import Store
-public import Ordinal
 public import Cardinal
-public import Ownership
 public import Index
+public import Ordinal
+public import Ownership
 public import Property
+import Store
 public import Tagged
 
 extension Hash.Table.ForEach where Element: ~Copyable {
