@@ -235,10 +235,6 @@ let package = Package(
                 ),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Tagged", package: "swift-tagged"),
-                .product(
-                    name: "Tagged",
-                    package: "swift-tagged"
-                ),
                 .product(name: "Memory Small", package: "swift-memory-allocation"),
             ]
         ),
