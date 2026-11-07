@@ -1,9 +1,9 @@
 import Cardinal
-public import Index
+import Index
 import Ordinal
 import Ownership
 import Store
-public import Tagged
+import Tagged
 
 
 extension Hash.Table.Bucket where Element: ~Copyable {
