@@ -782,14 +782,18 @@ private func runTrackedStream(seed: UInt64) -> Model.Verdict {
     return verdict
 }
 
-@Suite
-struct `Hash.Indexed Model` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `Hash.Indexed Model Tests` {}
+
+extension `Hash.Indexed Model Tests` {
+    @Suite
+    struct `Hash.Indexed Model` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `Hash.Indexed Model`.Integration {
+extension `Hash.Indexed Model Tests`.`Hash.Indexed Model`.Integration {
     @Test(arguments: Model.seeds(default: [0x5EED_0001, 0xC0FF_EE42, 0xDECA_DE77]))
     func `ordered column op stream matches the reference model under forced collisions`(
         seed: UInt64
@@ -817,7 +821,7 @@ extension `Hash.Indexed Model`.Integration {
     }
 }
 
-extension `Hash.Indexed Model`.Unit {
+extension `Hash.Indexed Model Tests`.`Hash.Indexed Model`.Unit {
     @Test
     func `two instances, same ops: the lawful surface is seed-independent`() {
         var first = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(_unchecked: Cardinal(8)))
@@ -876,7 +880,7 @@ extension `Hash.Indexed Model`.Unit {
     }
 }
 
-extension `Hash.Indexed Model`.`Edge Case` {
+extension `Hash.Indexed Model Tests`.`Hash.Indexed Model`.`Edge Case` {
     @Test
     func `empty column: misses, absent removals, wipes, coherence`() {
         var column = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(_unchecked: Cardinal(4)))
