@@ -14,5 +14,4 @@ extension Hash.Table.Bucket where Element: ~Copyable {
 
     public typealias Position = Index<Self>
 
-    public enum Ops {}
 }
