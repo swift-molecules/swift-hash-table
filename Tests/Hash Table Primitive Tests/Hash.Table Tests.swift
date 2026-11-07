@@ -115,7 +115,7 @@ struct `Hash Table Engine Tests` {
         let raw = (seed ^ 13) != 0 ? (seed ^ 13) : (seed ^ 21)
         let h = Hash.Value(_unchecked: raw)
 
-        for position in 0..<5 {
+        (0..<5).forEach { position in
             let inserted = table.insert(
                 position: Index<Int>(_unchecked: Ordinal(UInt(position))),
                 hashValue: h,

@@ -824,7 +824,7 @@ extension `Hash.Indexed Model`.Unit {
         var second = OrderedColumn<Key>(minimumCapacity: Tagged<Key, Cardinal>(_unchecked: Cardinal(8)))
         var members: [Key] = []
 
-        for id in 0..<48 {
+        (0..<48).forEach { id in
             let key = Key(id: id, collisionDivisor: 3)
             first.insert(Key(id: key.id, group: key.group))
             second.insert(Key(id: key.id, group: key.group))
@@ -859,12 +859,12 @@ extension `Hash.Indexed Model`.Unit {
     @Test
     func `growth re-seeds; every live member stays findable in insertion order`() {
         var column = OrderedColumn<Key>(minimumCapacity: .zero)
-        for id in 0..<200 {
+        (0..<200).forEach { id in
             column.insert(Key(id: id, collisionDivisor: 5))
         }
         let count = column.count
         #expect(count == Tagged<Key, Cardinal>(_unchecked: Cardinal(200)))
-        for id in 0..<200 {
+        (0..<200).forEach { id in
             let position = column.position(of: Key(id: id, collisionDivisor: 5))
             #expect(position == Index<Key>(_unchecked: Ordinal(UInt(id))))
         }
