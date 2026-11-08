@@ -3,6 +3,7 @@ public import Buffer
 public import Buffer_Linear_Primitive
 public import Buffer_Slots
 public import Cardinal
+public import Cyclic
 import Index
 public import Memory
 public import Memory_Allocator
@@ -12,7 +13,6 @@ import Ownership
 public import Storage
 public import Store
 public import Tagged
-public import Cyclic
 
 extension Hash {
 
