@@ -58,7 +58,7 @@ extension Hash {
         }
 
         @inlinable
-        package static func makeRankPlane(
+        static func makeRankPlane(
             bucketCapacity: Tagged<Bucket, Cardinal>
         ) -> Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear {
             var plane = Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear(
@@ -90,7 +90,7 @@ extension Hash {
         }
 
         @inlinable
-        package static func makeSeed() -> Int {
+        static func makeSeed() -> Int {
             var generator = SystemRandomNumberGenerator()
             return Int(bitPattern: UInt(truncatingIfNeeded: generator.next() as UInt64))
         }
