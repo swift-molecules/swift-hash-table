@@ -23,9 +23,25 @@ where Dense.Element: Swift::Hashable {
     @usableFromInline
     package var indices: Hash.Table<Dense.Element>
 
+    /// Composes a column over `elements`, whose slots `0..<count` hold its members, and indexes them.
     @inlinable
-    public init(elements: consuming Dense, indices: consuming Hash.Table<Dense.Element>) {
-        precondition(indices.isEmpty, "Hash.Indexed requires an empty index engine at composition")
+    public init(elements: consuming Dense, count: Tagged<Dense.Element, Cardinal>) {
+        precondition(
+            count.underlying.rawValue <= elements.capacity.underlying.rawValue,
+            "Hash.Indexed: count exceeds the dense store's capacity"
+        )
+        var indices = Hash.Table<Dense.Element>(minimumCapacity: elements.capacity)
+        var raw: UInt = 0
+        while raw < count.underlying.rawValue {
+            let slot = Index<Dense.Element>(_unchecked: Ordinal(raw))
+            let hashValue = Hash.Value(_unchecked: elements[slot].hashValue)
+            let duplicate = indices.position(forHash: hashValue, context: slot) { position, member in
+                elements[position] == elements[member]
+            }
+            precondition(duplicate == nil, "Hash.Indexed: the dense store holds a member twice")
+            indices.insert(_unchecked: (), position: slot, hashValue: hashValue)
+            raw &+= 1
+        }
         self.elements = elements
         self.indices = indices
     }
@@ -56,6 +72,14 @@ extension __HashIndexed: Store.`Protocol` where Dense: ~Copyable {
             let oldHash = Hash.Value(_unchecked: elements[slot].hashValue)
             yield &elements[slot]
             let newHash = Hash.Value(_unchecked: elements[slot].hashValue)
+            let duplicate = indices.position(forHash: newHash, context: slot) { position, written in
+                position.underlying.rawValue != written.underlying.rawValue
+                    && elements[position] == elements[written]
+            }
+            precondition(
+                duplicate == nil,
+                "Hash.Indexed: a subscript write must not make a member equal to another member"
+            )
             if oldHash != newHash {
                 indices.remove(hashValue: oldHash, context: slot) { position, mutated in
                     position.underlying.rawValue == mutated.underlying.rawValue

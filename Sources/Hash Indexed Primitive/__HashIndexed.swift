@@ -22,7 +22,7 @@ extension __HashIndexed where Dense: ~Copyable {
     where Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear {
         self.init(
             elements: Dense(minimumCapacity: minimumCapacity),
-            indices: Hash.Table(minimumCapacity: minimumCapacity)
+            count: .zero
         )
     }
 

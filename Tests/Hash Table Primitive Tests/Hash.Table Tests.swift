@@ -374,6 +374,61 @@ extension `Hash.Table Tests` {
 }
 
 extension `Hash.Table Tests` {
+    @Suite
+    struct `Hash Indexed Uniqueness Tests` {
+
+        @Test
+        func `a subscript write to a fresh value re-indexes the member`() {
+            var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
+            column.insert(10)
+            column.insert(20)
+            column.insert(30)
+            column[Index<Int>(_unchecked: Ordinal(1))] = 99
+            #expect(column.position(of: 99) == Index<Int>(_unchecked: Ordinal(1)))
+            #expect(column.position(of: 20) == nil)
+            let violations = Hash.Coherence.violations(column)
+            #expect(violations.isEmpty, "\(violations)")
+        }
+
+        @Test
+        func `a subscript write equal to another member is refused`() async {
+            await #expect(processExitsWith: .failure) {
+                var column = OrderedColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
+                column.insert(10)
+                column.insert(20)
+                column[Index<Int>(_unchecked: Ordinal(1))] = 10
+            }
+        }
+
+        @Test
+        func `composing over a non-empty dense store indexes its members`() {
+            var dense = DenseColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
+            dense.append(10)
+            dense.append(20)
+            dense.append(30)
+            let count = dense.count
+            let column = OrderedColumn<Int>(elements: dense, count: count)
+            #expect(column.count == Tagged<Int, Cardinal>(_unchecked: Cardinal(3)))
+            #expect(column.position(of: 10) == Index<Int>(_unchecked: Ordinal(0)))
+            #expect(column.position(of: 30) == Index<Int>(_unchecked: Ordinal(2)))
+            let violations = Hash.Coherence.violations(column)
+            #expect(violations.isEmpty, "\(violations)")
+        }
+
+        @Test
+        func `composing over a dense store that holds a member twice is refused`() async {
+            await #expect(processExitsWith: .failure) {
+                var dense = DenseColumn<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(4)))
+                dense.append(10)
+                dense.append(10)
+                let count = dense.count
+                _ = OrderedColumn<Int>(elements: dense, count: count)
+            }
+        }
+    }
+}
+
+extension `Hash.Table Tests` {
     @Suite(.serialized)
     struct `Hash Indexed Teardown Tests` {
 
