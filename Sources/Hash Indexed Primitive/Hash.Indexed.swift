@@ -48,6 +48,16 @@ where Dense.Element: Swift::Hashable {
 }
 
 extension __HashIndexed where Dense: ~Copyable {
+
+    /// Composes a column from members and an index that already agree with each other.
+    @inlinable
+    package init(elements: consuming Dense, indices: consuming Hash.Table<Dense.Element>) {
+        self.elements = elements
+        self.indices = indices
+    }
+}
+
+extension __HashIndexed where Dense: ~Copyable {
     @inlinable
     public consuming func take() -> Dense {
         elements

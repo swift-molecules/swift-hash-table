@@ -57,6 +57,26 @@ extension Hash {
             _rankToBucket = Self.makeRankPlane(bucketCapacity: hashCapacity)
         }
 
+        /// Composes a table from planes that already agree with each other.
+        @inlinable
+        package init(
+            count: Tagged<Element, Cardinal>,
+            seed: Int,
+            buffer:
+                consuming Buffer<
+                    Store.Split<
+                        Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>,
+                        Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>
+                    >
+                >.Slots,
+            rankToBucket: consuming Buffer<Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>>.Linear
+        ) {
+            _count = count
+            _seed = seed
+            _buffer = buffer
+            _rankToBucket = rankToBucket
+        }
+
         @inlinable
         static func makeRankPlane(
             bucketCapacity: Tagged<Bucket, Cardinal>
@@ -67,9 +87,7 @@ extension Hash {
 
             plane.append(addingCapacity: bucketCapacity.retag(Int.self)) {
                 (span: inout Swift::OutputSpan<Int>) in
-                while !span.isFull {
-                    span.append(0)
-                }
+                span.append(repeating: 0, count: span.freeCapacity)
             }
             return plane
         }
@@ -78,7 +96,7 @@ extension Hash {
         package static func bucketCapacity(
             for minimumCapacity: Tagged<Element, Cardinal>
         ) -> Tagged<Bucket, Cardinal> {
-            let minCap = Int(bitPattern: minimumCapacity.underlying.rawValue)
+            let minCap = Int(bitPattern: minimumCapacity)
             guard minCap > 0 else {
                 return Tagged<Bucket, Cardinal>(_unchecked: Cardinal(8))
             }
@@ -550,30 +568,11 @@ extension Hash.Table where Element: ~Copyable {
 
     @inlinable
     public borrowing func clone() -> Self {
-        var copy = Self(minimumCapacity: .zero)
-        var fresh = Buffer<
-            Store.Split<
-                Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>,
-                Storage<Memory.Allocator<Memory.Small<0>>>.Contiguous<Int>
-            >
-        >.Slots(
-            capacity: self.bucketCapacity.retag(Int.self),
-            metadataInitial: Self.empty
+        Self(
+            count: _count,
+            seed: _seed,
+            buffer: _buffer.clone(),
+            rankToBucket: _rankToBucket.clone()
         )
-        fresh.fill(payload: 0)
-        var freshPlane = Self.makeRankPlane(bucketCapacity: self.bucketCapacity)
-        var bucket: Index<Int> = .zero
-        let end = self.bucketCapacity.retag(Int.self).map { Ordinal($0.rawValue) }
-        while bucket < end {
-            fresh[metadata: bucket] = _buffer[metadata: bucket]
-            fresh[payload: bucket] = _buffer[payload: bucket]
-            freshPlane[bucket] = _rankToBucket[bucket]
-            bucket += .one
-        }
-        copy._buffer = fresh
-        copy._rankToBucket = freshPlane
-        copy._count = _count
-        copy._seed = _seed
-        return copy
     }
 }

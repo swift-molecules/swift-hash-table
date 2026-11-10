@@ -89,10 +89,7 @@ extension __HashIndexed where Dense: ~Copyable {
         Dense == Buffer<Storage<Memory.Allocator<Resource>>.Contiguous<E>>.Linear,
         E: Copyable
     {
-        var copy = Self(minimumCapacity: .zero)
-        copy.elements = elements.clone()
-        copy.indices = indices.clone()
-        return copy
+        Self(elements: elements.clone(), indices: indices.clone())
     }
 }
 

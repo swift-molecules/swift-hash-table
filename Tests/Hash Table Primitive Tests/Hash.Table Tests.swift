@@ -487,3 +487,65 @@ extension HashProbe {
     static func recordDestroy(_ id: Int) { unsafe _destroyed.append(id) }
     static var destroyedSorted: [Int] { unsafe _destroyed.sorted() }
 }
+
+extension `Hash.Table Tests` {
+    @Suite
+    struct `Hash Table Clone Tests` {
+
+        @Test
+        func `a clone of a grown column holds every member in order, and removing from it leaves the original whole`() {
+            var column = OrderedColumn<Int>(minimumCapacity: .zero)
+            (0..<200).forEach { member in
+                column.insert(member * 3)
+            }
+
+            var copy = column.clone()
+
+            var copied: [Int] = []
+            copy.forEach { member in copied.append(member) }
+            #expect(copied == (0..<200).map { $0 * 3 })
+            let coherentCopy = Hash.Coherence.violations(copy)
+            #expect(coherentCopy.isEmpty, "\(coherentCopy)")
+
+            stride(from: 0, to: 200, by: 2).forEach { member in
+                _ = copy.remove(member * 3)
+            }
+
+            var kept: [Int] = []
+            copy.forEach { member in kept.append(member) }
+            #expect(kept == stride(from: 1, to: 200, by: 2).map { $0 * 3 })
+            let coherentCopyAfterRemoval = Hash.Coherence.violations(copy)
+            #expect(coherentCopyAfterRemoval.isEmpty, "\(coherentCopyAfterRemoval)")
+            var original: [Int] = []
+            column.forEach { member in original.append(member) }
+            #expect(original == (0..<200).map { $0 * 3 })
+            let coherentOriginal = Hash.Coherence.violations(column)
+            #expect(coherentOriginal.isEmpty, "\(coherentOriginal)")
+        }
+
+        @Test
+        func `the bucket count is the least power of two that keeps the requested members under seven tenths full`() {
+            let forNone = Hash.Table<Int>(minimumCapacity: .zero).capacity
+            let forAHundred = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(100))).capacity
+            #expect(forNone == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(8)))
+            #expect(forAHundred == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(256)))
+        }
+
+        @Test
+        func `a clone of an empty table is empty and takes members`() {
+            let table = Hash.Table<Int>(minimumCapacity: .zero)
+
+            var copy = table.clone()
+
+            let isEmpty = copy.isEmpty
+            #expect(isEmpty)
+            #expect(copy.capacity == table.capacity)
+            let inserted = copy.insert(position: 0, hashValue: typedHash((7)), equals: { _ in false })
+            #expect(inserted)
+            let found = copy.position(forHash: typedHash((7)), equals: { $0 == 0 })
+            #expect(found == 0)
+            let originalIsEmpty = table.isEmpty
+            #expect(originalIsEmpty)
+        }
+    }
+}
