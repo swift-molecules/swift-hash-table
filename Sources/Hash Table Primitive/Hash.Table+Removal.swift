@@ -73,6 +73,7 @@ extension Hash.Table where Element: ~Copyable {
         context: borrowing Context,
         equals: (Index<Element>, borrowing Context) -> Bool
     ) -> Index<Element>? {
+        guard !isEmpty else { return nil }
         let hash = Self.normalize(hashValue)
         let capacity = bucketCapacity
         var currentBucket = Self.bucket(for: hash, seed: _seed, capacity: capacity)

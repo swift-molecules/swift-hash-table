@@ -112,7 +112,7 @@ extension `Hash.Table Tests` {
         func
             `a collision cluster wrapping the table end: backward shift repairs wrapped-edge, head, and middle removes`()
         {
-            var table = Hash.Table<Int>(minimumCapacity: .zero)
+            var table = Hash.Table<Int>(minimumCapacity: .one)
 
             let seed = table._seed
             let raw = (seed ^ 13) != 0 ? (seed ^ 13) : (seed ^ 21)
@@ -525,9 +525,9 @@ extension `Hash.Table Tests` {
 
         @Test
         func `the bucket count is the least power of two that keeps the requested members under seven tenths full`() {
-            let forNone = Hash.Table<Int>(minimumCapacity: .zero).capacity
+            let forOne = Hash.Table<Int>(minimumCapacity: .one).capacity
             let forAHundred = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(100))).capacity
-            #expect(forNone == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(8)))
+            #expect(forOne == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(8)))
             #expect(forAHundred == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(256)))
         }
 
@@ -546,6 +546,131 @@ extension `Hash.Table Tests` {
             #expect(found == 0)
             let originalIsEmpty = table.isEmpty
             #expect(originalIsEmpty)
+        }
+    }
+}
+extension `Hash.Table Tests` {
+    @Suite
+    struct `Hash Table Without Buckets Tests` {
+
+        @Test
+        func `a table made for no members has no buckets until its first insert gives it eight`() {
+            var table = Hash.Table<Int>(minimumCapacity: .zero)
+            #expect(table.capacity == .zero)
+
+            let inserted = table.insert(position: 0, hashValue: typedHash((42)), equals: { _ in false })
+
+            #expect(inserted)
+            #expect(table.capacity == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(8)))
+            let found = table.position(forHash: typedHash((42)), equals: { $0 == 0 })
+            #expect(found == 0)
+            #expect(table.count == .one)
+        }
+
+        @Test
+        func `every lookup in a table without buckets finds nothing`() {
+            let table = Hash.Table<Int>(minimumCapacity: .zero)
+            let hash = typedHash((42))
+
+            let position = table.position(forHash: hash, equals: { _ in true })
+            let positionWithContext = table.position(forHash: hash, context: 0) { _, _ in true }
+            let bucket = table.index(forHash: hash, equals: { _ in true })
+            let bucketWithContext = table.index(forHash: hash, context: 0) { _, _ in true }
+            let contains = table.contains(hashValue: hash, equals: { _ in true })
+            let containsWithContext = table.contains(forHash: hash, context: 0) { _, _ in true }
+
+            #expect(position == nil)
+            #expect(positionWithContext == nil)
+            #expect(bucket == nil)
+            #expect(bucketWithContext == nil)
+            #expect(!contains)
+            #expect(!containsWithContext)
+            #expect(table.capacity == .zero)
+        }
+
+        @Test
+        func `removing from a table without buckets removes nothing`() {
+            var table = Hash.Table<Int>(minimumCapacity: .zero)
+            let hash = typedHash((42))
+
+            let removed = table.remove(hashValue: hash, equals: { _ in true })
+            let removedWithContext = table.remove(hashValue: hash, context: 0) { _, _ in true }
+
+            #expect(removed == nil)
+            #expect(removedWithContext == nil)
+            #expect(table.capacity == .zero)
+            let isEmpty = table.isEmpty
+            #expect(isEmpty)
+        }
+
+        @Test
+        func `the unchecked insert gives a table without buckets its first eight`() {
+            var table = Hash.Table<Int>(minimumCapacity: .zero)
+
+            table.insert(_unchecked: (), position: 0, hashValue: typedHash((5)))
+
+            #expect(table.capacity == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(8)))
+            let found = table.position(forHash: typedHash((5)), equals: { $0 == 0 })
+            #expect(found == 0)
+        }
+
+        @Test
+        func `the insert that takes a context gives a table without buckets its first eight`() {
+            var table = Hash.Table<Int>(minimumCapacity: .zero)
+
+            let inserted = table.insert(position: 0, hashValue: typedHash((5)), context: 0) { _, _ in false }
+
+            #expect(inserted)
+            #expect(table.capacity == Tagged<Hash.Table<Int>.Bucket, Cardinal>(_unchecked: Cardinal(8)))
+        }
+
+        @Test
+        func `removing all without keeping capacity gives the buckets back, and the table takes members again`() {
+            var table = Hash.Table<Int>(minimumCapacity: Tagged<Int, Cardinal>(_unchecked: Cardinal(100)))
+            (0..<50).forEach { member in
+                table.insert(_unchecked: (), position: Index<Int>(_unchecked: Ordinal(UInt(member))), hashValue: typedHash(member))
+            }
+
+            table.remove.all(keepingCapacity: false)
+
+            #expect(table.capacity == .zero)
+            let isEmpty = table.isEmpty
+            #expect(isEmpty)
+            let gone = table.position(forHash: typedHash((7)), equals: { _ in true })
+            #expect(gone == nil)
+            table.insert(_unchecked: (), position: 0, hashValue: typedHash((7)))
+            let found = table.position(forHash: typedHash((7)), equals: { $0 == 0 })
+            #expect(found == 0)
+        }
+
+        @Test
+        func `removing all while keeping capacity leaves a table without buckets as it was`() {
+            var table = Hash.Table<Int>(minimumCapacity: .zero)
+
+            table.remove.all(keepingCapacity: true)
+
+            #expect(table.capacity == .zero)
+            let visited = table.count
+            #expect(visited == .zero)
+        }
+
+        @Test
+        func `a column made empty takes two hundred members in order and stays coherent`() {
+            var column = OrderedColumn<Int>(minimumCapacity: .zero)
+            let absent = column.contains(3)
+            #expect(!absent)
+            let removed = column.remove(3)
+            #expect(removed == nil)
+
+            (0..<200).forEach { member in
+                column.insert(member * 3)
+            }
+
+            var members: [Int] = []
+            column.forEach { member in members.append(member) }
+            #expect(members == (0..<200).map { $0 * 3 })
+            let violations = Hash.Coherence.violations(column)
+            #expect(violations.isEmpty, "\(violations)")
         }
     }
 }

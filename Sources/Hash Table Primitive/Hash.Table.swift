@@ -92,13 +92,17 @@ extension Hash {
             return plane
         }
 
+        /// The bucket count for a table that should hold `minimumCapacity` members.
+        ///
+        /// A table asked to hold none has no buckets, so making and dropping it allocates nothing. Its first
+        /// insert grows it to eight.
         @inlinable
         package static func bucketCapacity(
             for minimumCapacity: Tagged<Element, Cardinal>
         ) -> Tagged<Bucket, Cardinal> {
             let minCap = Int(bitPattern: minimumCapacity)
             guard minCap > 0 else {
-                return Tagged<Bucket, Cardinal>(_unchecked: Cardinal(8))
+                return .zero
             }
 
             let needed = max(8, (minCap * 10) / 7)
@@ -355,6 +359,7 @@ extension Hash.Table where Element: ~Copyable {
         forHash hashValue: Hash.Value,
         equals: (Index<Element>) -> Bool
     ) -> Index<Element>? {
+        guard !isEmpty else { return nil }
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
@@ -399,6 +404,7 @@ extension Hash.Table where Element: ~Copyable {
         context: borrowing Context,
         equals: (Index<Element>, borrowing Context) -> Bool
     ) -> Index<Element>? {
+        guard !isEmpty else { return nil }
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
@@ -441,6 +447,7 @@ extension Hash.Table where Element: ~Copyable {
         forHash hashValue: Hash.Value,
         equals: (Index<Element>) -> Bool
     ) -> Bucket.Position? {
+        guard !isEmpty else { return nil }
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
@@ -482,6 +489,7 @@ extension Hash.Table where Element: ~Copyable {
         context: borrowing Context,
         equals: (Index<Element>, borrowing Context) -> Bool
     ) -> Bucket.Position? {
+        guard !isEmpty else { return nil }
         let hash = Self.normalize(hashValue)
         let capacityCount = bucketCapacity
 
