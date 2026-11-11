@@ -29,7 +29,8 @@ extension Hash.Coherence {
             let slot = Index<E>(_unchecked: Ordinal(slotRaw))
             let foundPosition = column.position(of: column[slot])
             if foundPosition?.underlying.rawValue != slotRaw {
-                found.append("law 1: the member at dense slot \(slot) resolves to \(String(describing: foundPosition))")
+                let resolved = foundPosition.map { "dense slot \($0)" } ?? "nothing"
+                found.append("law 1: the member at dense slot \(slot) resolves to \(resolved)")
             }
             slotRaw &+= 1
         }
